@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coach Admin – Wissensbasis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:    #0f1a17;
+      --card:  #162220;
+      --border:#2a3e38;
+      --sage:  #7a9e8e;
+      --mint:  #a8c5b8;
+      --warm:  #c4956a;
+      --text:  #d4e0dc;
+      --muted: #6a8880;
+      --green: #4caf85;
+      --red:   #e05252;
+    }
+    html, body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(122,158,142,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .shell {
+      position: relative; z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    /* Header */
+    header { margin-bottom: 3rem; }
+    .back {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      margin-bottom: 1.5rem;
+    }
+    .back:hover { color: var(--sage); }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem; font-weight: 300;
+      color: var(--mint);
+      margin-bottom: .3rem;
+    }
+    .subtitle { font-size: .8rem; color: var(--muted); letter-spacing: .1em; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-title {
+      font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 1.5rem;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+    }
+    .stat { flex: 1; min-width: 120px; }
+    .stat-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.8rem; color: var(--mint);
+    }
+    .stat-label { font-size: .72rem; color: var(--muted); margin-top: .2rem; }
+
+    /* Form */
+    .field { margin-bottom: 1.2rem; }
+    label {
+      display: block; font-size: .72rem; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: .75rem 1rem;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: .5rem;
+      color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus { border-color: var(--sage); }
+
+    /* Drop zone */
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: .75rem;
+      padding: 2.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .dropzone:hover, .dropzone.drag { border-color: var(--sage); background: rgba(122,158,142,.05); }
+    .dropzone .icon { font-size: 2rem; margin-bottom: .75rem; }
+    .dropzone p { font-size: .85rem; color: var(--muted); }
+    .dropzone strong { color: var(--mint); }
+    #fileInput { display: none; }
+    .file-info {
+      margin-top: .75rem; font-size: .8rem;
+      color: var(--warm); font-family: 'DM Mono', monospace;
+    }
+
+    /* Progress */
+    .progress-wrap { margin-top: 1.5rem; display: none; }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: .72rem; color: var(--muted); margin-bottom: .5rem;
+    }
+    .progress-bar {
+      height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%; background: var(--sage);
+      border-radius: 2px; transition: width .3s ease;
+      animation: shimmer 2s linear infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200px 0; }
+      100% { background-position: 200px 0; }
+    }
+    .step-list { margin-top: 1rem; }
+    .step {
+      display: flex; align-items: center; gap: .75rem;
+      font-size: .8rem; color: var(--muted);
+      padding: .4rem 0;
+    }
+    .step .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); flex-shrink: 0;
+      transition: background .3s;
+    }
+    .step.active .dot { background: var(--sage); }
+    .step.done .dot   { background: var(--green); }
+    .step.active { color: var(--text); }
+    .step.done   { color: var(--green); }
+
+    /* Result */
+    .result-card {
+      margin-top: 1.5rem; padding: 1.2rem 1.5rem;
+      border-radius: .75rem; display: none;
+    }
+    .result-card.success { background: rgba(76,175,133,.08); border: 1px solid rgba(76,175,133,.3); }
+    .result-card.error   { background: rgba(224,82,82,.08);  border: 1px solid rgba(224,82,82,.3); }
+    .result-title { font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .75rem; }
+    .result-card.success .result-title { color: var(--green); }
+    .result-card.error   .result-title { color: var(--red); }
+    .result-row { display: flex; justify-content: space-between; font-size: .82rem; padding: .25rem 0; }
+    .result-row span:first-child { color: var(--muted); }
+    .result-row span:last-child  { font-family: 'DM Mono', monospace; color: var(--mint); }
+    .transcript-preview {
+      margin-top: 1rem; padding: .75rem; background: rgba(0,0,0,.3);
+      border-radius: .5rem; font-size: .78rem; font-family: 'DM Mono', monospace;
+      color: var(--muted); line-height: 1.6; max-height: 120px; overflow-y: auto;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: .8rem 2rem; border: none; border-radius: 100px;
+      font-family: 'DM Sans', sans-serif; font-size: .8rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-primary { background: var(--sage); color: var(--bg); }
+    .btn-primary:hover { background: var(--mint); }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-outline {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--sage); color: var(--sage); }
+
+    .actions { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <a href="/" class="back">← Zurück zum Coach</a>
+    <h1>Wissensbasis</h1>
+    <div class="subtitle">Admin · Podcast-Episoden verwalten</div>
+  </header>
+
+  <!-- Stats -->
+  <div class="card" id="statsCard">
+    <div class="card-title">Datenbank-Übersicht</div>
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-val" id="statVectors">—</div>
+        <div class="stat-label">Vektoren gespeichert</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="statEpisodes">—</div>
+        <div class="stat-label">Episoden (ca.)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Form -->
+  <div class="card">
+    <div class="card-title">Episode hochladen & transkribieren</div>
+
+    <div class="field">
+      <label>Admin-Passwort</label>
+      <input type="password" id="password" placeholder="Passwort eingeben" />
+    </div>
+
+    <div class="field">
+      <label>Episoden-Titel</label>
+      <input type="text" id="episodeTitle" placeholder="z.B. Episode 42 – Systemische Fragen" />
+    </div>
+
+    <div class="field">
+      <label>MP3-Datei</label>
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <div class="icon">🎙</div>
+        <p><strong>Klicken oder MP3 hierher ziehen</strong></p>
+        <p>Unterstützt: MP3 · Max. 25 MB pro Datei</p>
+        <div class="file-info" id="fileInfo"></div>
+      </div>
+      <input type="file" id="fileInput" accept=".mp3" />
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label">
+        <span id="progressLabel">Verarbeite …</span>
+        <span id="progressPct"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="step-list">
+        <div class="step" id="step1"><div class="dot"></div>MP3 wird hochgeladen</div>
+        <div class="step" id="step2"><div class="dot"></div>Whisper transkribiert Audio</div>
+        <div class="step" id="step3"><div class="dot"></div>Text wird in Chunks aufgeteilt</div>
+        <div class="step" id="step4"><div class="dot"></div>Embeddings werden erstellt</div>
+        <div class="step" id="step5"><div class="dot"></div>In Pinecone gespeichert</div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-card" id="resultCard">
+      <div class="result-title" id="resultTitle"></div>
+      <div id="resultContent"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="uploadBtn" onclick="uploadFile()">
+        Jetzt verarbeiten
+      </button>
+      <button class="btn btn-outline" onclick="loadStats()">Stats aktualisieren</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── File Drop ──────────────────────────────────────────────────────────────
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const fileInfo  = document.getElementById('fileInfo');
+
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault(); dropzone.classList.remove('drag');
+    const f = e.dataTransfer.files[0];
+    if (f) { fileInput.files = e.dataTransfer.files; showFile(f); }
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) showFile(fileInput.files[0]); });
+
+  function showFile(f) {
+    fileInfo.textContent = `${f.name} · ${(f.size / 1024 / 1024).toFixed(1)} MB`;
+  }
+
+  // ── Steps ──────────────────────────────────────────────────────────────────
+  function setStep(n) {
+    for (let i = 1; i <= 5; i++) {
+      const el = document.getElementById(`step${i}`);
+      el.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+    }
+    const pct = Math.min(((n - 1) / 4) * 100, 95);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = Math.round(pct) + '%';
+  }
+
+  function showResult(success, data) {
+    const card = document.getElementById('resultCard');
+    const title = document.getElementById('resultTitle');
+    const content = document.getElementById('resultContent');
+    card.className = 'result-card ' + (success ? 'success' : 'error');
+    card.style.display = 'block';
+
+    if (success) {
+      title.textContent = '✓ Erfolgreich verarbeitet';
+      content.innerHTML = `
+        <div class="result-row"><span>Episode</span><span>${data.episode}</span></div>
+        <div class="result-row"><span>Zeichen transkribiert</span><span>${data.transcript_length.toLocaleString()}</span></div>
+        <div class="result-row"><span>Chunks erstellt</span><span>${data.chunks_created}</span></div>
+        <div class="result-row"><span>Vektoren gespeichert</span><span>${data.vectors_stored}</span></div>
+        <div class="transcript-preview">${data.transcript_preview}</div>
+      `;
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('progressPct').textContent = '100%';
+      setStep(6);
+    } else {
+      title.textContent = '✗ Fehler';
+      content.innerHTML = `<div style="color:var(--red);font-size:.85rem;">${data}</div>`;
+    }
+  }
+
+  // ── Upload ─────────────────────────────────────────────────────────────────
+  async function uploadFile() {
+    const password = document.getElementById('password').value.trim();
+    const title    = document.getElementById('episodeTitle').value.trim();
+    const file     = fileInput.files[0];
+
+    if (!password) return alert('Bitte Passwort eingeben');
+    if (!title)    return alert('Bitte Episoden-Titel eingeben');
+    if (!file)     return alert('Bitte MP3 auswählen');
+
+    // Setup UI
+    document.getElementById('uploadBtn').disabled = true;
+    document.getElementById('progressWrap').style.display = 'block';
+    document.getElementById('resultCard').style.display = 'none';
+
+    setStep(1);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('episode_title', title);
+      formData.append('password', password);
+
+      setStep(2); // uploading / whisper starts
+
+      const res = await fetch('/api/upload-mp3', {
+        method: 'POST',
+        body: formData,
+      });
+
+      setStep(4); // embedding
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Unbekannter Fehler');
+      }
+
+      const data = await res.json();
+      setStep(5);
+      setTimeout(() => showResult(true, data), 500);
+      loadStats();
+
+    } catch (err) {
+      showResult(false, err.message);
+    } finally {
+      document.getElementById('uploadBtn').disabled = false;
+    }
+  }
+
+  // ── Stats ──────────────────────────────────────────────────────────────────
+  async function loadStats() {
+    const password = document.getElementById('password').value.trim();
+    if (!password) return;
+    try {
+      const res = await fetch(`/api/stats?password=${encodeURIComponent(password)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      document.getElementById('statVectors').textContent = data.total_vectors.toLocaleString();
+      document.getElementById('statEpisodes').textContent = '~' + Math.round(data.total_vectors / 30);
+    } catch (e) { console.error(e); }
+  }
+
+  // Load stats on pw input
+  document.getElementById('password').addEventListener('change', loadStats);
+</script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Systemischer Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sage:    #7a9e8e;
+      --deep:    #1a2e28;
+      --warm:    #f5f0e8;
+      --mist:    #c8d8d2;
+      --accent:  #c4956a;
+      --text:    #2d3a35;
+      --light:   #e8f0ec;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--warm);
+      color: var(--text);
+    }
+
+    /* ── Background ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(122,158,142,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(196,149,106,.12) 0%, transparent 60%),
+        var(--warm);
+    }
+
+    /* ── Layout ── */
+    .shell {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .wordmark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 300;
+      letter-spacing: .12em;
+      color: var(--deep);
+    }
+    .wordmark em { font-style: italic; color: var(--sage); }
+    .tagline {
+      margin-top: .4rem;
+      font-size: .78rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--sage);
+      opacity: .8;
+    }
+
+    /* ── Orb ── */
+    .orb-wrap {
+      position: relative;
+      width: clamp(160px, 40vw, 220px);
+      aspect-ratio: 1;
+      margin: 0 auto 2.5rem;
+      cursor: pointer;
+    }
+    .orb {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%,
+        rgba(255,255,255,.55),
+        rgba(122,158,142,.35) 45%,
+        rgba(26,46,40,.55) 100%);
+      box-shadow:
+        0 0 0 1px rgba(122,158,142,.3),
+        0 8px 40px rgba(26,46,40,.18),
+        inset 0 1px 0 rgba(255,255,255,.4);
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+    .orb-wrap:hover .orb { transform: scale(1.04); }
+
+    /* Pulse rings */
+    .ring {
+      position: absolute; inset: -12px;
+      border-radius: 50%;
+      border: 1px solid rgba(122,158,142,.25);
+      opacity: 0;
+      animation: none;
+    }
+    .ring:nth-child(2) { inset: -24px; border-color: rgba(122,158,142,.15); }
+    .ring:nth-child(3) { inset: -38px; border-color: rgba(122,158,142,.08); }
+
+    .orb-wrap.listening .ring {
+      animation: pulse 2s ease-out infinite;
+    }
+    .orb-wrap.listening .ring:nth-child(2) { animation-delay: .4s; }
+    .orb-wrap.listening .ring:nth-child(3) { animation-delay: .8s; }
+
+    @keyframes pulse {
+      0%   { opacity: 0; transform: scale(.9); }
+      40%  { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.15); }
+    }
+
+    /* Speaking animation */
+    .orb-wrap.speaking .orb {
+      animation: breathe 1.4s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.07); }
+    }
+
+    /* ── Status ── */
+    .status {
+      text-align: center;
+      margin-bottom: 2rem;
+      min-height: 3.5rem;
+    }
+    .status-label {
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: .3rem;
+    }
+    .status-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--deep);
+      font-style: italic;
+      min-height: 1.6rem;
+    }
+
+    /* ── Controls ── */
+    .controls { display: flex; gap: 1rem; justify-content: center; }
+
+    .btn {
+      border: none; cursor: pointer;
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: .7rem 1.8rem;
+      transition: all .2s ease;
+    }
+    .btn-primary {
+      background: var(--deep);
+      color: var(--warm);
+      box-shadow: 0 4px 20px rgba(26,46,40,.25);
+    }
+    .btn-primary:hover { background: var(--sage); transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--sage);
+      border: 1px solid var(--mist);
+    }
+    .btn-secondary:hover { background: var(--light); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+
+    /* ── Transcript ── */
+    .transcript-wrap {
+      width: 100%; max-width: 640px;
+      margin-top: 3rem;
+    }
+    .transcript-label {
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--sage);
+      opacity: .7;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .transcript-scroll {
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 1.5rem;
+      background: rgba(255,255,255,.5);
+      border: 1px solid rgba(122,158,142,.2);
+      border-radius: 1rem;
+      backdrop-filter: blur(6px);
+    }
+    .transcript-scroll::-webkit-scrollbar { width: 4px; }
+    .transcript-scroll::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 2px; }
+
+    .msg {
+      margin-bottom: 1.2rem;
+      display: flex; flex-direction: column;
+    }
+    .msg-role {
+      font-size: .65rem; letter-spacing: .18em; text-transform: uppercase;
+      margin-bottom: .25rem;
+      opacity: .6;
+    }
+    .msg.coach .msg-role { color: var(--sage); }
+    .msg.user  .msg-role { color: var(--accent); text-align: right; }
+    .msg-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; line-height: 1.6;
+      color: var(--deep);
+    }
+    .msg.user .msg-text { text-align: right; }
+
+    .empty-state {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      color: var(--sage);
+      opacity: .6;
+      font-size: 1rem;
+    }
+
+    /* ── Error Toast ── */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      background: #c0392b; color: white;
+      padding: .7rem 1.5rem; border-radius: 100px;
+      font-size: .8rem; z-index: 999;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    .toast.show { opacity: 1; }
+
+    @media (max-width: 480px) {
+      .controls { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="wordmark">Systemischer <em>Coach</em></div>
+    <div class="tagline">Gespräch · Reflexion · Entwicklung</div>
+  </header>
+
+  <div class="orb-wrap" id="orb" onclick="toggleSession()">
+    <div class="orb"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+  </div>
+
+  <div class="status">
+    <div class="status-label">Status</div>
+    <div class="status-text" id="statusText">Berühre den Kreis, um zu beginnen</div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" id="mainBtn" onclick="toggleSession()">
+      Gespräch beginnen
+    </button>
+    <button class="btn btn-secondary" id="muteBtn" onclick="toggleMute()" style="display:none">
+      Mikrofon stumm
+    </button>
+  </div>
+
+  <div class="transcript-wrap" id="transcriptWrap" style="display:none">
+    <div class="transcript-label">Gesprächsverlauf</div>
+    <div class="transcript-scroll" id="transcript">
+      <div class="empty-state">Das Gespräch beginnt …</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let pc = null;          // RTCPeerConnection
+  let dc = null;          // DataChannel
+  let localStream = null;
+  let audioEl = null;
+  let sessionActive = false;
+  let muted = false;
+  const messages = [];
+
+  // ── DOM refs ───────────────────────────────────────────────────────────────
+  const orb       = document.getElementById('orb');
+  const statusText = document.getElementById('statusText');
+  const mainBtn    = document.getElementById('mainBtn');
+  const muteBtn    = document.getElementById('muteBtn');
+  const transcript = document.getElementById('transcript');
+  const transcriptWrap = document.getElementById('transcriptWrap');
+  const toast      = document.getElementById('toast');
+
+  // ── UI helpers ─────────────────────────────────────────────────────────────
+  function setStatus(text) { statusText.textContent = text; }
+  function setOrbState(state) {
+    orb.classList.remove('listening','speaking','idle');
+    if (state) orb.classList.add(state);
+  }
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  function addMessage(role, text) {
+    if (!text.trim()) return;
+    messages.push({ role, text });
+    if (transcript.querySelector('.empty-state')) transcript.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    div.innerHTML = `
+      <span class="msg-role">${role === 'coach' ? 'Coach' : 'Du'}</span>
+      <span class="msg-text">${escapeHtml(text)}</span>
+    `;
+    transcript.appendChild(div);
+    transcript.scrollTop = transcript.scrollHeight;
+  }
+
+  function escapeHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Session ────────────────────────────────────────────────────────────────
+  async function toggleSession() {
+    if (sessionActive) {
+      await endSession();
+    } else {
+      await startSession();
+    }
+  }
+
+  async function startSession() {
+    setStatus('Verbinde …');
+    mainBtn.disabled = true;
+
+    try {
+      // 1. Get ephemeral token from our backend
+      const tokenRes = await fetch('/api/session', { method: 'POST' });
+      if (!tokenRes.ok) throw new Error(`Token Fehler: ${tokenRes.status}`);
+      const tokenData = await tokenRes.json();
+      const ephemeralKey = tokenData.client_secret?.value;
+      if (!ephemeralKey) throw new Error('Kein Session-Token erhalten');
+
+      // 2. Get microphone
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // 3. Set up WebRTC peer connection
+      pc = new RTCPeerConnection();
+
+      // Remote audio → play
+      audioEl = document.createElement('audio');
+      audioEl.autoplay = true;
+      pc.ontrack = e => { audioEl.srcObject = e.streams[0]; };
+
+      // Local audio → send
+      localStream.getAudioTracks().forEach(track => pc.addTrack(track, localStream));
+
+      // 4. Data channel for events
+      dc = pc.createDataChannel('oai-events');
+      dc.onopen  = () => console.log('DataChannel open');
+      dc.onmessage = handleServerEvent;
+
+      // 5. Create SDP offer
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      // 6. Send offer to OpenAI Realtime
+      const sdpRes = await fetch(
+        'https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${ephemeralKey}`,
+            'Content-Type': 'application/sdp',
+          },
+          body: offer.sdp,
+        }
+      );
+      if (!sdpRes.ok) throw new Error(`OpenAI Fehler: ${sdpRes.status}`);
+      const answerSdp = await sdpRes.text();
+      await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
+
+      // ── UI update ──
+      sessionActive = true;
+      setOrbState('listening');
+      setStatus('Hört zu …');
+      mainBtn.textContent = 'Gespräch beenden';
+      mainBtn.disabled = false;
+      muteBtn.style.display = 'block';
+      transcriptWrap.style.display = 'block';
+
+    } catch (err) {
+      console.error(err);
+      showToast('Fehler: ' + err.message);
+      setStatus('Verbindung fehlgeschlagen');
+      mainBtn.disabled = false;
+      setOrbState('');
+      if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+    }
+  }
+
+  async function endSession() {
+    if (dc)          { dc.close();  dc = null; }
+    if (pc)          { pc.close();  pc = null; }
+    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+    if (audioEl)     { audioEl.srcObject = null; audioEl = null; }
+
+    sessionActive = false;
+    setOrbState('');
+    setStatus('Gespräch beendet. Danke.');
+    mainBtn.textContent = 'Neues Gespräch';
+    mainBtn.disabled = false;
+    muteBtn.style.display = 'none';
+    muted = false;
+  }
+
+  function toggleMute() {
+    if (!localStream) return;
+    muted = !muted;
+    localStream.getAudioTracks().forEach(t => { t.enabled = !muted; });
+    muteBtn.textContent = muted ? 'Mikrofon an' : 'Mikrofon stumm';
+    setStatus(muted ? 'Mikrofon stummgeschaltet' : 'Hört zu …');
+  }
+
+  // ── Server Events ──────────────────────────────────────────────────────────
+  function handleServerEvent(evt) {
+    let event;
+    try { event = JSON.parse(evt.data); } catch { return; }
+
+    switch (event.type) {
+      case 'session.created':
+      case 'session.updated':
+        setStatus('Bereit. Sprich jetzt.');
+        break;
+
+      case 'input_audio_buffer.speech_started':
+        setOrbState('listening');
+        setStatus('Ich höre …');
+        break;
+
+      case 'input_audio_buffer.speech_stopped':
+        setOrbState('');
+        setStatus('Denke nach …');
+        break;
+
+      case 'response.audio.started':
+      case 'response.audio_transcript.delta':
+        setOrbState('speaking');
+        setStatus('Coach spricht …');
+        break;
+
+      case 'response.audio_transcript.done':
+        if (event.transcript) addMessage('coach', event.transcript);
+        setOrbState('listening');
+        setStatus('Hört zu …');
+        break;
+
+      case 'conversation.item.input_audio_transcription.completed':
+        if (event.transcript) addMessage('user', event.transcript);
+        break;
+
+      case 'error':
+        console.error('OpenAI error:', event.error);
+        showToast('Verbindungsfehler: ' + (event.error?.message || 'Unbekannt'));
+        break;
+    }
+  }
+</script>
+</body>
+</html>
