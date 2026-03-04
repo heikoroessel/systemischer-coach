@@ -2,320 +2,347 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin – Systemisch Denken Coach</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Admin – Systemischer Coach</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;900&family=Barlow+Mono&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --orange: #F47C20;
-      --orange-dark: #d96a10;
       --black: #111;
       --white: #fff;
-      --grey: #f5f5f5;
-      --mid: #666;
-      --border: #ddd;
+      --grey: #f4f4f4;
+      --mid: #888;
       --green: #27ae60;
       --red: #e74c3c;
     }
-    html, body { font-family: 'Barlow', sans-serif; background: var(--grey); color: var(--black); min-height: 100vh; }
+    html, body { font-family: 'Barlow', sans-serif; background: var(--grey); color: var(--black); -webkit-font-smoothing: antialiased; }
 
-    .topbar {
-      background: var(--white); border-bottom: 3px solid var(--orange);
-      padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+    header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px; background: var(--white);
+      border-bottom: 1px solid #e8e8e8;
+      position: sticky; top: 0; z-index: 10;
     }
-    .logo-box { width: 36px; height: 36px; background: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .logo-box::after { content: ''; width: 14px; height: 14px; border: 3px solid var(--white); }
-    .brand-name { font-size: .95rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
-    .brand-sub { font-size: .68rem; color: var(--mid); letter-spacing: .08em; text-transform: uppercase; }
-    .back-link { margin-left: auto; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--orange); text-decoration: none; }
-    .back-link:hover { text-decoration: underline; }
+    .logo { width: 36px; height: 36px; background: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo::after { content: ''; width: 14px; height: 14px; border: 3px solid var(--white); }
+    .brand-main { font-size: 15px; font-weight: 900; }
+    .brand-sub { font-size: 11px; color: var(--mid); letter-spacing: .05em; text-transform: uppercase; }
+    .back { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--orange); text-decoration: none; }
 
-    .shell { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
-
-    h2 { font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: -.01em; margin-bottom: .2rem; }
-    .page-sub { font-size: .8rem; color: var(--mid); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2rem; }
+    /* PASSWORD GATE */
+    .pw-gate {
+      padding: 40px 20px; text-align: center;
+    }
+    .pw-gate h2 { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+    .pw-gate p { font-size: 14px; color: var(--mid); margin-bottom: 24px; }
+    .pw-input {
+      width: 100%; max-width: 320px; padding: 14px 16px;
+      font-family: 'Barlow', sans-serif; font-size: 16px;
+      border: 2px solid var(--black); background: var(--white);
+      outline: none; display: block; margin: 0 auto 12px;
+    }
+    .pw-input:focus { border-color: var(--orange); }
+    .pw-btn {
+      width: 100%; max-width: 320px;
+      padding: 16px; font-family: 'Barlow', sans-serif;
+      font-size: 14px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+      background: var(--orange); color: var(--white); border: none; cursor: pointer;
+    }
 
     /* TABS */
-    .tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 3px solid var(--black); }
+    .tabs {
+      display: flex; background: var(--white);
+      border-bottom: 3px solid var(--black);
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
     .tab {
-      padding: .7rem 1.5rem; font-family: 'Barlow', sans-serif;
-      font-weight: 900; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
-      cursor: pointer; border: none; background: transparent; color: var(--mid);
-      border-bottom: 3px solid transparent; margin-bottom: -3px;
-      transition: all .15s;
+      padding: 14px 20px; font-family: 'Barlow', sans-serif;
+      font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--mid); border: none; background: transparent; cursor: pointer;
+      white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px;
+      -webkit-tap-highlight-color: transparent;
     }
     .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
-    .tab:hover { color: var(--black); }
 
-    .tab-content { display: none; }
+    .tab-content { display: none; padding: 20px; }
     .tab-content.active { display: block; }
 
     /* CARDS */
-    .card { background: var(--white); border: 2px solid var(--black); padding: 1.75rem; margin-bottom: 1.5rem; }
+    .card { background: var(--white); padding: 20px; margin-bottom: 16px; }
     .card-title {
-      font-size: .7rem; font-weight: 900; letter-spacing: .2em;
-      text-transform: uppercase; color: var(--orange);
-      border-left: 3px solid var(--orange); padding-left: .5rem;
-      margin-bottom: 1.25rem;
+      font-size: 11px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--orange); border-left: 3px solid var(--orange); padding-left: 8px;
+      margin-bottom: 16px;
     }
 
     /* STATS */
-    .stats-row { display: flex; gap: 2rem; flex-wrap: wrap; }
-    .stat-val { font-size: 2.2rem; font-weight: 900; color: var(--orange); }
-    .stat-label { font-size: .72rem; color: var(--mid); text-transform: uppercase; letter-spacing: .1em; margin-top: .1rem; }
+    .stat-val { font-size: 36px; font-weight: 900; color: var(--orange); }
+    .stat-label { font-size: 11px; color: var(--mid); text-transform: uppercase; letter-spacing: .1em; }
 
     /* FORM */
-    .field { margin-bottom: 1.1rem; }
-    .field label { display: block; font-size: .72rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .4rem; }
-    input[type=text], input[type=password], textarea {
-      width: 100%; padding: .65rem .9rem;
-      border: 2px solid var(--black); background: var(--white);
-      font-family: 'Barlow', sans-serif; font-size: .9rem; color: var(--black);
-      outline: none; resize: vertical;
-      transition: border-color .15s;
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    input[type=text], textarea {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid #e0e0e0; background: var(--white);
+      font-family: 'Barlow', sans-serif; font-size: 15px; color: var(--black);
+      outline: none; resize: vertical; -webkit-appearance: none;
     }
     input:focus, textarea:focus { border-color: var(--orange); }
-    textarea { min-height: 120px; }
+    textarea { min-height: 100px; }
 
     /* DROPZONE */
     .dropzone {
-      border: 3px dashed var(--border); padding: 2rem; text-align: center;
-      cursor: pointer; transition: border-color .2s, background .2s;
+      border: 2px dashed #ccc; padding: 28px 20px; text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .dropzone:hover, .dropzone.drag { border-color: var(--orange); background: rgba(244,124,32,.04); }
-    .dropzone .icon { font-size: 2rem; margin-bottom: .5rem; }
-    .dropzone p { font-size: .85rem; color: var(--mid); }
+    .dropzone.drag, .dropzone:active { border-color: var(--orange); background: rgba(244,124,32,.04); }
+    .dropzone-icon { font-size: 28px; margin-bottom: 8px; }
+    .dropzone p { font-size: 14px; color: var(--mid); line-height: 1.5; }
     .dropzone strong { color: var(--orange); }
-    .file-info { margin-top: .5rem; font-size: .8rem; color: var(--orange); font-weight: 700; }
+    .file-name { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--orange); }
     #fileInput { display: none; }
 
-    /* PROGRESS */
-    .progress-wrap { margin-top: 1.25rem; display: none; }
-    .progress-bar { height: 6px; background: var(--border); margin-bottom: .75rem; }
-    .progress-fill { height: 100%; width: 0%; background: var(--orange); transition: width .3s; }
-    .step { display: flex; align-items: center; gap: .6rem; font-size: .8rem; color: var(--mid); padding: .3rem 0; }
-    .step .dot { width: 10px; height: 10px; background: var(--border); flex-shrink: 0; }
-    .step.active .dot { background: var(--orange); }
-    .step.done .dot { background: var(--green); }
+    /* STEPS */
+    .steps { margin-top: 16px; display: none; }
+    .progress-bar { height: 4px; background: #eee; margin-bottom: 12px; }
+    .progress-fill { height: 100%; width: 0%; background: var(--orange); transition: width .4s; }
+    .step { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 14px; color: var(--mid); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #ddd; flex-shrink: 0; }
     .step.active { color: var(--black); font-weight: 700; }
+    .step.active .dot { background: var(--orange); }
     .step.done { color: var(--green); font-weight: 700; }
+    .step.done .dot { background: var(--green); }
 
     /* RESULT */
-    .result { margin-top: 1.25rem; padding: 1.25rem; display: none; border: 2px solid; }
-    .result.success { border-color: var(--green); background: rgba(39,174,96,.06); }
-    .result.error   { border-color: var(--red);   background: rgba(231,76,60,.06); }
-    .result-title { font-size: .75rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .75rem; }
+    .result { display: none; margin-top: 16px; padding: 16px; border: 2px solid; }
+    .result.success { border-color: var(--green); }
+    .result.error   { border-color: var(--red); }
+    .result-title { font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
     .result.success .result-title { color: var(--green); }
     .result.error   .result-title { color: var(--red); }
-    .result-row { display: flex; justify-content: space-between; font-size: .82rem; padding: .2rem 0; border-bottom: 1px solid var(--border); }
-    .result-row:last-child { border-bottom: none; }
-    .result-row span:last-child { font-weight: 700; color: var(--orange); }
-    .preview { margin-top: .75rem; padding: .75rem; background: var(--grey); font-size: .78rem; color: var(--mid); line-height: 1.6; max-height: 100px; overflow-y: auto; }
+    .result-row { display: flex; justify-content: space-between; font-size: 14px; padding: 5px 0; border-bottom: 1px solid #f0f0f0; }
+    .result-row:last-child { border: none; }
+    .result-row b { color: var(--orange); }
+    .preview-text { margin-top: 10px; font-size: 13px; color: var(--mid); line-height: 1.5; background: var(--grey); padding: 10px; }
 
     /* BTNS */
     .btn {
-      font-family: 'Barlow', sans-serif; font-weight: 900; font-size: .78rem;
-      letter-spacing: .1em; text-transform: uppercase;
-      border: none; cursor: pointer; padding: .75rem 1.75rem;
-      transition: all .15s;
+      display: block; width: 100%; padding: 16px;
+      font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 900;
+      letter-spacing: .08em; text-transform: uppercase;
+      border: none; cursor: pointer; text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity .15s;
     }
-    .btn-primary { background: var(--orange); color: var(--white); }
-    .btn-primary:hover { background: var(--orange-dark); }
-    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
-    .btn-black { background: var(--black); color: var(--white); }
-    .btn-black:hover { background: #333; }
+    .btn:active { opacity: .8; }
+    .btn:disabled { opacity: .4; }
+    .btn-orange { background: var(--orange); color: var(--white); }
+    .btn-black  { background: var(--black); color: var(--white); }
     .btn-outline { background: transparent; color: var(--black); border: 2px solid var(--black); }
-    .btn-outline:hover { background: var(--black); color: var(--white); }
-    .actions { display: flex; gap: .75rem; margin-top: 1.25rem; flex-wrap: wrap; }
+    .btn + .btn { margin-top: 10px; }
 
-    /* PROMPT EDITOR */
-    .prompt-section { margin-bottom: 1.5rem; }
-    .prompt-section h3 { font-size: .75rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; color: var(--orange); margin-bottom: .5rem; }
-    .hint { font-size: .72rem; color: var(--mid); margin-bottom: .5rem; font-style: italic; }
+    /* EPISODE LIST */
+    .ep-item { background: var(--white); padding: 16px; margin-bottom: 8px; border-left: 3px solid var(--orange); }
+    .ep-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .ep-links { font-size: 12px; color: var(--mid); }
+    .ep-edit-btn { font-size: 12px; font-weight: 700; color: var(--orange); border: none; background: none; cursor: pointer; padding: 0; margin-top: 8px; }
 
-    .save-banner { display: none; background: var(--green); color: var(--white); padding: .6rem 1rem; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-top: 1rem; }
+    /* EDIT PANEL */
+    .edit-panel { display: none; background: var(--grey); padding: 16px; margin-top: 10px; }
+    .edit-panel.open { display: block; }
+
+    /* SAVE BANNER */
+    .save-ok { display: none; background: var(--green); color: var(--white); padding: 12px 16px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-top: 12px; }
+
+    /* PROMPT SECTIONS */
+    .prompt-group { margin-bottom: 20px; }
+    .prompt-group h3 { font-size: 12px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; color: var(--orange); margin-bottom: 4px; }
+    .hint { font-size: 12px; color: var(--mid); margin-bottom: 8px; font-style: italic; }
   </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="logo-box"></div>
+<header>
+  <div class="logo"></div>
   <div>
-    <div class="brand-name">Heiko Rössel</div>
-    <div class="brand-sub">Coach Admin</div>
+    <div class="brand-main">Admin</div>
+    <div class="brand-sub">Systemischer Coach</div>
   </div>
-  <a href="/" class="back-link">← Zum Coach</a>
+  <a href="/" class="back">← Coach</a>
+</header>
+
+<!-- PASSWORD GATE -->
+<div id="pwGate" class="pw-gate">
+  <h2>Anmelden</h2>
+  <p>Bitte Admin-Passwort eingeben</p>
+  <input type="password" class="pw-input" id="pwInput" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()"/>
+  <button class="pw-btn" onclick="doLogin()">Weiter</button>
+  <p id="pwError" style="color:var(--red);font-size:13px;margin-top:12px;display:none">Falsches Passwort</p>
 </div>
 
-<div class="shell">
-  <h2>Wissensbasis & Einstellungen</h2>
-  <div class="page-sub">Admin-Bereich · Podcast-Episoden & Coach-Konfiguration</div>
-
+<!-- MAIN APP (hidden until login) -->
+<div id="mainApp" style="display:none">
   <div class="tabs">
-    <button class="tab active" onclick="showTab('upload')">Episoden hochladen</button>
-    <button class="tab" onclick="showTab('prompt')">Coach konfigurieren</button>
-    <button class="tab" onclick="showTab('stats')">Statistiken</button>
+    <button class="tab active" onclick="showTab('upload',this)">Episoden</button>
+    <button class="tab" onclick="showTab('episodes',this)">Bearbeiten</button>
+    <button class="tab" onclick="showTab('prompt',this)">Coach-Prompt</button>
+    <button class="tab" onclick="showTab('stats',this)">Statistiken</button>
   </div>
 
-  <!-- TAB: UPLOAD -->
+  <!-- UPLOAD TAB -->
   <div class="tab-content active" id="tab-upload">
     <div class="card">
-      <div class="card-title">Episode hochladen & transkribieren</div>
+      <div class="card-title">Episode hochladen</div>
 
       <div class="field">
-        <label>Admin-Passwort</label>
-        <input type="password" id="password" placeholder="Passwort eingeben"/>
+        <label>Episoden-Titel</label>
+        <input type="text" id="epTitle" placeholder="z.B. PSD 315 – Singularität"/>
       </div>
-      <div style="display:flex;gap:1rem;flex-wrap:wrap">
-        <div class="field" style="flex:2;min-width:200px">
-          <label>Episoden-Titel</label>
-          <input type="text" id="episodeTitle" placeholder="z.B. Episode 315 – Singularität"/>
-        </div>
-        <div class="field" style="flex:1;min-width:120px">
-          <label>Nummer (optional)</label>
-          <input type="text" id="episodeNumber" placeholder="315"/>
-        </div>
+      <div class="field">
+        <label>Nummer (optional)</label>
+        <input type="text" id="epNumber" placeholder="315"/>
       </div>
-      <div style="display:flex;gap:1rem;flex-wrap:wrap">
-        <div class="field" style="flex:1;min-width:180px">
-          <label>Link Website</label>
-          <input type="text" id="linkWebsite" placeholder="https://heikoroessel.com/..."/>
-        </div>
-        <div class="field" style="flex:1;min-width:180px">
-          <label>Link Spotify</label>
-          <input type="text" id="linkSpotify" placeholder="https://open.spotify.com/..."/>
-        </div>
-        <div class="field" style="flex:1;min-width:180px">
-          <label>Link Apple Podcasts</label>
-          <input type="text" id="linkApple" placeholder="https://podcasts.apple.com/..."/>
-        </div>
+      <div class="field">
+        <label>Link Website</label>
+        <input type="text" id="epWeb" placeholder="https://www.heikoroessel.com/..."/>
+      </div>
+      <div class="field">
+        <label>Link Spotify</label>
+        <input type="text" id="epSpotify" placeholder="https://open.spotify.com/..."/>
+      </div>
+      <div class="field">
+        <label>Link Apple Podcasts</label>
+        <input type="text" id="epApple" placeholder="https://podcasts.apple.com/..."/>
       </div>
 
       <div class="field">
-        <label>MP3-Datei (auch über 25 MB möglich)</label>
+        <label>MP3-Datei (auch über 25 MB)</label>
         <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-          <div class="icon">🎙</div>
-          <p><strong>Klicken oder MP3 hierher ziehen</strong></p>
-          <p>Große Dateien werden automatisch aufgeteilt</p>
-          <div class="file-info" id="fileInfo"></div>
+          <div class="dropzone-icon">🎙</div>
+          <p><strong>Tippen zum Auswählen</strong><br>oder MP3 hierher ziehen<br>Große Dateien werden automatisch aufgeteilt</p>
+          <div class="file-name" id="fileName"></div>
         </div>
         <input type="file" id="fileInput" accept=".mp3"/>
       </div>
 
-      <div class="progress-wrap" id="progressWrap">
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="steps" id="steps">
+        <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
         <div class="step" id="s1"><div class="dot"></div>MP3 wird hochgeladen</div>
-        <div class="step" id="s2"><div class="dot"></div>Whisper transkribiert Audio</div>
-        <div class="step" id="s3"><div class="dot"></div>Text wird in Chunks aufgeteilt</div>
-        <div class="step" id="s4"><div class="dot"></div>Embeddings werden erstellt</div>
+        <div class="step" id="s2"><div class="dot"></div>Whisper transkribiert</div>
+        <div class="step" id="s3"><div class="dot"></div>Text in Chunks aufgeteilt</div>
+        <div class="step" id="s4"><div class="dot"></div>Embeddings erstellt</div>
         <div class="step" id="s5"><div class="dot"></div>In Pinecone gespeichert</div>
       </div>
 
       <div class="result" id="result">
         <div class="result-title" id="resultTitle"></div>
-        <div id="resultContent"></div>
+        <div id="resultBody"></div>
       </div>
 
-      <div class="actions">
-        <button class="btn btn-primary" id="uploadBtn" onclick="doUpload()">Jetzt verarbeiten</button>
-        <button class="btn btn-outline" onclick="loadStats()">Stats laden</button>
-      </div>
+      <button class="btn btn-orange" id="uploadBtn" onclick="doUpload()" style="margin-top:16px">Jetzt verarbeiten</button>
     </div>
   </div>
 
-  <!-- TAB: PROMPT -->
+  <!-- EPISODES TAB -->
+  <div class="tab-content" id="tab-episodes">
+    <div style="padding-bottom:8px">
+      <button class="btn btn-outline" onclick="loadEpisodes()" style="margin-bottom:16px">Episoden laden</button>
+      <div id="epList"><p style="font-size:14px;color:var(--mid)">Klicke "Episoden laden" um die Liste anzuzeigen.</p></div>
+    </div>
+  </div>
+
+  <!-- PROMPT TAB -->
   <div class="tab-content" id="tab-prompt">
     <div class="card">
-      <div class="card-title">Coach-Konfiguration</div>
-      <p class="hint" style="margin-bottom:1.5rem">Alle Felder werden direkt als Anweisungen an den Coach gesendet. Schreibe in natürlicher Sprache – der Coach folgt diesen Anweisungen.</p>
+      <div class="card-title">Coach-Prompt konfigurieren</div>
+      <p class="hint" style="margin-bottom:16px">Der Prompt wird dauerhaft in Pinecone gespeichert – bleibt auch nach Code-Updates erhalten.</p>
 
-      <div class="field">
-        <label>Admin-Passwort</label>
-        <input type="password" id="promptPassword" placeholder="Passwort eingeben"/>
-      </div>
-
-      <div class="prompt-section">
-        <h3>Rolle des Coaches</h3>
+      <div class="prompt-group">
+        <h3>Rolle</h3>
         <p class="hint">Wer ist dieser Coach? Auf welchem Wissen basiert er?</p>
         <textarea id="pRole" rows="4"></textarea>
       </div>
-
-      <div class="prompt-section">
+      <div class="prompt-group">
         <h3>Verhalten & Gesprächsführung</h3>
-        <p class="hint">Wie verhält er sich? Wie führt er Gespräche? Welche Regeln gelten?</p>
+        <p class="hint">Wie verhält er sich? Welche Regeln gelten?</p>
         <textarea id="pBehavior" rows="6"></textarea>
       </div>
-
-      <div class="prompt-section">
-        <h3>Interventionen & Episoden-Empfehlungen</h3>
-        <p class="hint">Wann bringt er Beobachtungen? Wie empfiehlt er Episoden? Nach wievielen Fragen?</p>
+      <div class="prompt-group">
+        <h3>Interventionen & Episoden</h3>
+        <p class="hint">Wann bringt er Beobachtungen? Wie empfiehlt er Episoden?</p>
         <textarea id="pInterventions" rows="6"></textarea>
       </div>
-
-      <div class="prompt-section">
+      <div class="prompt-group">
         <h3>Systemische Prinzipien</h3>
-        <p class="hint">Welche Grundprinzipien leiten den Coach?</p>
         <textarea id="pPrinciples" rows="5"></textarea>
       </div>
-
-      <div class="prompt-section">
-        <h3>Begrüßung & Gesprächseinstieg</h3>
-        <p class="hint">Wie beginnt der Coach jedes Gespräch?</p>
+      <div class="prompt-group">
+        <h3>Begrüßung</h3>
         <textarea id="pGreeting" rows="3"></textarea>
       </div>
 
-      <div class="actions">
-        <button class="btn btn-primary" onclick="loadPrompt()">Aktuellen Prompt laden</button>
-        <button class="btn btn-black" onclick="savePrompt()">Prompt speichern</button>
-      </div>
-      <div class="save-banner" id="saveBanner">✓ Prompt gespeichert – aktiv beim nächsten Gespräch</div>
+      <button class="btn btn-outline" onclick="loadPrompt()">Aktuellen Prompt laden</button>
+      <button class="btn btn-black" onclick="savePrompt()" style="margin-top:10px">Prompt speichern</button>
+      <div class="save-ok" id="saveOk">✓ Gespeichert – aktiv beim nächsten Gespräch</div>
     </div>
   </div>
 
-  <!-- TAB: STATS -->
+  <!-- STATS TAB -->
   <div class="tab-content" id="tab-stats">
     <div class="card">
-      <div class="card-title">Datenbank-Übersicht</div>
-      <div class="field">
-        <label>Admin-Passwort</label>
-        <input type="password" id="statsPassword" placeholder="Passwort eingeben"/>
+      <div class="card-title">Datenbank</div>
+      <div style="display:flex;gap:32px;margin-bottom:20px">
+        <div><div class="stat-val" id="statVec">—</div><div class="stat-label">Vektoren</div></div>
+        <div><div class="stat-val" id="statEp">—</div><div class="stat-label">Episoden ca.</div></div>
       </div>
-      <div class="stats-row" style="margin-bottom:1.5rem">
-        <div><div class="stat-val" id="statVectors">—</div><div class="stat-label">Vektoren gespeichert</div></div>
-        <div><div class="stat-val" id="statEpisodes">—</div><div class="stat-label">Episoden (ca.)</div></div>
-      </div>
-      <div class="actions">
-        <button class="btn btn-primary" onclick="loadStats()">Aktualisieren</button>
-      </div>
+      <button class="btn btn-orange" onclick="loadStats()">Aktualisieren</button>
     </div>
   </div>
 </div>
 
 <script>
+  let PW = '';
+
+  // LOGIN
+  async function doLogin(){
+    const pw = document.getElementById('pwInput').value.trim();
+    if(!pw) return;
+    try{
+      const r = await fetch('/api/stats?password='+encodeURIComponent(pw));
+      if(!r.ok){ document.getElementById('pwError').style.display='block'; return; }
+      PW = pw;
+      document.getElementById('pwGate').style.display='none';
+      document.getElementById('mainApp').style.display='block';
+      loadStats();
+    }catch(e){
+      document.getElementById('pwError').style.display='block';
+    }
+  }
+  document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
   // TABS
-  function showTab(id){
+  function showTab(id, btn){
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-'+id).classList.add('active');
-    event.target.classList.add('active');
+    btn.classList.add('active');
   }
 
   // DROPZONE
-  const dropzone=document.getElementById('dropzone');
-  const fileInput=document.getElementById('fileInput');
-  dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag');});
-  dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag'));
-  dropzone.addEventListener('drop',e=>{
-    e.preventDefault();dropzone.classList.remove('drag');
-    const f=e.dataTransfer.files[0];
-    if(f){fileInput.files=e.dataTransfer.files;showFile(f);}
+  const dz=document.getElementById('dropzone');
+  const fi=document.getElementById('fileInput');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault(); dz.classList.remove('drag');
+    if(e.dataTransfer.files[0]){fi.files=e.dataTransfer.files; showFile(e.dataTransfer.files[0]);}
   });
-  fileInput.addEventListener('change',()=>{if(fileInput.files[0])showFile(fileInput.files[0]);});
-  function showFile(f){
-    document.getElementById('fileInfo').textContent=f.name+' · '+(f.size/1024/1024).toFixed(1)+' MB';
-  }
+  fi.addEventListener('change',()=>{ if(fi.files[0]) showFile(fi.files[0]); });
+  function showFile(f){ document.getElementById('fileName').textContent=f.name+' · '+(f.size/1024/1024).toFixed(1)+' MB'; }
 
   // STEPS
   function setStep(n){
@@ -323,20 +350,18 @@
       const el=document.getElementById('s'+i);
       el.className='step'+(i<n?' done':i===n?' active':'');
     }
-    document.getElementById('progressFill').style.width=Math.min(((n-1)/4)*100,95)+'%';
+    document.getElementById('progFill').style.width=Math.min(((n-1)/4)*95,95)+'%';
   }
 
   // UPLOAD
   async function doUpload(){
-    const pw=document.getElementById('password').value.trim();
-    const title=document.getElementById('episodeTitle').value.trim();
-    const file=fileInput.files[0];
-    if(!pw)return alert('Passwort eingeben');
-    if(!title)return alert('Episoden-Titel eingeben');
-    if(!file)return alert('MP3 auswählen');
+    const title=document.getElementById('epTitle').value.trim();
+    const file=fi.files[0];
+    if(!title){alert('Bitte Episoden-Titel eingeben');return;}
+    if(!file){alert('Bitte MP3 auswählen');return;}
 
     document.getElementById('uploadBtn').disabled=true;
-    document.getElementById('progressWrap').style.display='block';
+    document.getElementById('steps').style.display='block';
     document.getElementById('result').style.display='none';
     setStep(1);
 
@@ -344,37 +369,38 @@
       const fd=new FormData();
       fd.append('file',file);
       fd.append('episode_title',title);
-      fd.append('episode_number',document.getElementById('episodeNumber').value);
-      fd.append('link_website',document.getElementById('linkWebsite').value);
-      fd.append('link_spotify',document.getElementById('linkSpotify').value);
-      fd.append('link_apple',document.getElementById('linkApple').value);
-      fd.append('password',pw);
+      fd.append('episode_number',document.getElementById('epNumber').value);
+      fd.append('link_website',document.getElementById('epWeb').value);
+      fd.append('link_spotify',document.getElementById('epSpotify').value);
+      fd.append('link_apple',document.getElementById('epApple').value);
+      fd.append('password',PW);
 
       setStep(2);
       const res=await fetch('/api/upload-mp3',{method:'POST',body:fd});
       setStep(4);
       if(!res.ok){const e=await res.json();throw new Error(e.detail||'Fehler');}
-      const data=await res.json();
+      const d=await res.json();
       setStep(5);
-      document.getElementById('progressFill').style.width='100%';
+      document.getElementById('progFill').style.width='100%';
+      // Mark last step done
+      document.getElementById('s5').className='step done';
 
       const r=document.getElementById('result');
       r.className='result success'; r.style.display='block';
       document.getElementById('resultTitle').textContent='Erfolgreich verarbeitet';
-      document.getElementById('resultContent').innerHTML=`
-        <div class="result-row"><span>Episode</span><span>${data.episode}</span></div>
-        <div class="result-row"><span>Teile verarbeitet</span><span>${data.parts}</span></div>
-        <div class="result-row"><span>Zeichen transkribiert</span><span>${data.transcript_length.toLocaleString()}</span></div>
-        <div class="result-row"><span>Chunks erstellt</span><span>${data.chunks}</span></div>
-        <div class="result-row"><span>Vektoren gespeichert</span><span>${data.vectors}</span></div>
-        <div class="preview">${data.preview}</div>
+      document.getElementById('resultBody').innerHTML=`
+        <div class="result-row"><span>Episode</span><b>${d.episode}</b></div>
+        <div class="result-row"><span>Teile</span><b>${d.parts}</b></div>
+        <div class="result-row"><span>Zeichen</span><b>${d.transcript_length.toLocaleString()}</b></div>
+        <div class="result-row"><span>Vektoren</span><b>${d.vectors}</b></div>
+        <div class="preview-text">${d.preview}</div>
       `;
       loadStats();
     }catch(err){
       const r=document.getElementById('result');
       r.className='result error'; r.style.display='block';
       document.getElementById('resultTitle').textContent='Fehler';
-      document.getElementById('resultContent').innerHTML=`<div style="color:var(--red)">${err.message}</div>`;
+      document.getElementById('resultBody').innerHTML=`<div style="color:var(--red);font-size:14px">${err.message}</div>`;
     }finally{
       document.getElementById('uploadBtn').disabled=false;
     }
@@ -382,24 +408,75 @@
 
   // STATS
   async function loadStats(){
-    const pw=document.getElementById('statsPassword').value||document.getElementById('password').value;
-    if(!pw)return;
     try{
-      const r=await fetch('/api/stats?password='+encodeURIComponent(pw));
+      const r=await fetch('/api/stats?password='+encodeURIComponent(PW));
       if(!r.ok)return;
       const d=await r.json();
-      document.getElementById('statVectors').textContent=d.total_vectors.toLocaleString();
-      document.getElementById('statEpisodes').textContent='~'+Math.round(d.total_vectors/30);
-    }catch(e){console.error(e);}
+      document.getElementById('statVec').textContent=d.total_vectors.toLocaleString();
+      document.getElementById('statEp').textContent='~'+Math.round(d.total_vectors/8);
+    }catch(e){}
+  }
+
+  // EPISODES
+  async function loadEpisodes(){
+    const list=document.getElementById('epList');
+    list.innerHTML='<p style="font-size:14px;color:var(--mid)">Lade …</p>';
+    try{
+      const r=await fetch('/api/episodes?password='+encodeURIComponent(PW));
+      if(!r.ok)throw new Error('Fehler');
+      const d=await r.json();
+      if(!d.episodes.length){list.innerHTML='<p style="font-size:14px;color:var(--mid)">Noch keine Episoden gefunden.</p>';return;}
+      list.innerHTML='';
+      d.episodes.forEach(ep=>{
+        const div=document.createElement('div');
+        div.className='ep-item';
+        div.innerHTML=`
+          <div class="ep-title">${ep.episode} ${ep.episode_number?'#'+ep.episode_number:''}</div>
+          <div class="ep-links">
+            ${ep.link_website?'🌐 Website':'❌ Kein Website-Link'} &nbsp;
+            ${ep.link_spotify?'🎵 Spotify':'❌ Kein Spotify'} &nbsp;
+            ${ep.link_apple?'🍎 Apple':'❌ Kein Apple'}
+          </div>
+          <button class="ep-edit-btn" onclick="toggleEdit(this,'${ep.id}')">Links bearbeiten ▼</button>
+          <div class="edit-panel" id="ep-${ep.id}">
+            <div class="field"><label>Website</label><input type="text" id="ew-${ep.id}" value="${ep.link_website||''}"/></div>
+            <div class="field"><label>Spotify</label><input type="text" id="es-${ep.id}" value="${ep.link_spotify||''}"/></div>
+            <div class="field"><label>Apple</label><input type="text" id="ea-${ep.id}" value="${ep.link_apple||''}"/></div>
+            <button class="btn btn-orange" onclick="saveEpisode('${ep.id}','${ep.episode}')" style="margin-top:8px">Speichern</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }catch(e){list.innerHTML='<p style="color:var(--red);font-size:14px">Fehler beim Laden</p>';}
+  }
+
+  function toggleEdit(btn, id){
+    const panel=document.getElementById('ep-'+id);
+    const open=panel.classList.toggle('open');
+    btn.textContent=open?'Schließen ▲':'Links bearbeiten ▼';
+  }
+
+  async function saveEpisode(id, episode){
+    try{
+      const r=await fetch('/api/episodes/update',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          password:PW, id,episode,
+          link_website:document.getElementById('ew-'+id).value,
+          link_spotify:document.getElementById('es-'+id).value,
+          link_apple:document.getElementById('ea-'+id).value,
+        })});
+      if(!r.ok)throw new Error('Fehler');
+      alert('Gespeichert!');
+      loadEpisodes();
+    }catch(e){alert('Fehler: '+e.message);}
   }
 
   // PROMPT
   async function loadPrompt(){
-    const pw=document.getElementById('promptPassword').value.trim();
-    if(!pw)return alert('Passwort eingeben');
     try{
-      const r=await fetch('/api/prompt?password='+encodeURIComponent(pw));
-      if(!r.ok){alert('Falsches Passwort');return;}
+      const r=await fetch('/api/prompt?password='+encodeURIComponent(PW));
+      if(!r.ok){alert('Fehler beim Laden');return;}
       const d=await r.json();
       document.getElementById('pRole').value=d.role||'';
       document.getElementById('pBehavior').value=d.behavior||'';
@@ -410,28 +487,23 @@
   }
 
   async function savePrompt(){
-    const pw=document.getElementById('promptPassword').value.trim();
-    if(!pw)return alert('Passwort eingeben');
-    const payload={
-      password:pw,
-      role:document.getElementById('pRole').value,
-      behavior:document.getElementById('pBehavior').value,
-      interventions:document.getElementById('pInterventions').value,
-      principles:document.getElementById('pPrinciples').value,
-      greeting:document.getElementById('pGreeting').value,
-    };
     try{
-      const r=await fetch('/api/prompt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const r=await fetch('/api/prompt',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          password:PW,
+          role:document.getElementById('pRole').value,
+          behavior:document.getElementById('pBehavior').value,
+          interventions:document.getElementById('pInterventions').value,
+          principles:document.getElementById('pPrinciples').value,
+          greeting:document.getElementById('pGreeting').value,
+        })});
       if(!r.ok){alert('Fehler beim Speichern');return;}
-      const banner=document.getElementById('saveBanner');
-      banner.style.display='block';
-      setTimeout(()=>banner.style.display='none',4000);
+      const ok=document.getElementById('saveOk');
+      ok.style.display='block';
+      setTimeout(()=>ok.style.display='none',4000);
     }catch(e){alert('Fehler: '+e.message);}
   }
-
-  // auto-load stats on pw change
-  document.getElementById('statsPassword').addEventListener('change',loadStats);
-  document.getElementById('password').addEventListener('change',loadStats);
 </script>
 </body>
 </html>

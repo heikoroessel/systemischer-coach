@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Systemischer Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #F47C20;
+      --black: #111111;
+      --white: #ffffff;
+      --grey: #f4f4f4;
+      --mid: #888888;
+    }
+    html, body {
+      height: 100%; min-height: 100vh;
+      font-family: 'Barlow', sans-serif;
+      background: var(--white); color: var(--black);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* HEADER */
+    header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e8e8e8;
+      background: var(--white);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .logo {
+      width: 36px; height: 36px; background: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo::after {
+      content: ''; width: 14px; height: 14px;
+      border: 3px solid var(--white);
+    }
+    .brand { line-height: 1.2; }
+    .brand-main { font-size: 15px; font-weight: 900; letter-spacing: .01em; }
+    .brand-sub { font-size: 11px; color: var(--mid); letter-spacing: .05em; text-transform: uppercase; }
+
+    /* HERO BLOCK */
+    .hero {
+      background: var(--orange);
+      padding: 32px 20px 28px;
+    }
+    .hero h1 {
+      font-size: 38px; font-weight: 900; color: var(--white);
+      line-height: 1.0; letter-spacing: -.02em;
+      margin-bottom: 8px;
+    }
+    .hero p {
+      font-size: 14px; color: rgba(255,255,255,.8);
+      font-weight: 400; line-height: 1.5;
+    }
+
+    /* MAIN CONTENT */
+    .content { padding: 28px 20px; }
+
+    /* VOICE ORB AREA */
+    .orb-section {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 0 24px;
+    }
+    .orb-ring {
+      width: 140px; height: 140px; border-radius: 50%;
+      border: 3px solid var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; cursor: pointer;
+      transition: border-color .2s;
+    }
+    .orb-ring.active { border-color: var(--orange); }
+    .orb-ring.idle   { border-color: #ddd; }
+    .orb-inner {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .2s, background .2s;
+    }
+    .orb-ring.idle .orb-inner { background: #ddd; }
+    .orb-icon { font-size: 36px; }
+    .orb-ring.speaking .orb-inner { animation: pulse-orb 1s ease-in-out infinite; }
+    .orb-ring.listening .orb-inner { animation: pulse-orb 1.5s ease-in-out infinite; }
+    @keyframes pulse-orb {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.08); }
+    }
+
+    .status-text {
+      margin-top: 16px;
+      font-size: 13px; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--mid);
+    }
+    .status-text.active { color: var(--orange); }
+
+    /* SPEED SELECTOR */
+    .speed-section { margin-bottom: 24px; }
+    .section-label {
+      font-size: 11px; font-weight: 900; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--mid);
+      margin-bottom: 10px;
+    }
+    .speed-btns { display: flex; gap: 8px; }
+    .speed-btn {
+      flex: 1; padding: 12px 0;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px; font-weight: 700;
+      border: 2px solid #e0e0e0;
+      background: var(--white); color: var(--mid);
+      cursor: pointer; text-align: center;
+      transition: all .15s; letter-spacing: .03em;
+    }
+    .speed-btn.selected {
+      border-color: var(--orange);
+      color: var(--orange);
+      background: rgba(244,124,32,.06);
+    }
+
+    /* VOICE SELECTOR */
+    .voice-section { margin-bottom: 28px; }
+    .voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .voice-btn {
+      padding: 11px 8px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px; font-weight: 700;
+      border: 2px solid #e0e0e0;
+      background: var(--white); color: var(--mid);
+      cursor: pointer; text-align: center;
+      transition: all .15s;
+    }
+    .voice-btn.selected {
+      border-color: var(--black);
+      color: var(--black);
+      background: var(--grey);
+    }
+
+    /* MAIN BUTTON */
+    .main-btn {
+      width: 100%; padding: 18px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px; font-weight: 900;
+      letter-spacing: .08em; text-transform: uppercase;
+      border: none; cursor: pointer;
+      background: var(--orange); color: var(--white);
+      transition: background .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .main-btn:active { background: #d96a10; }
+    .main-btn.ending { background: var(--black); }
+    .main-btn:disabled { opacity: .4; }
+
+    .mute-btn {
+      width: 100%; padding: 14px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      border: 2px solid var(--black);
+      background: transparent; color: var(--black);
+      cursor: pointer; margin-top: 10px;
+      transition: all .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mute-btn.muted { background: var(--black); color: var(--white); }
+
+    /* ORANGE DIVIDER (wie auf Website) */
+    .divider {
+      width: 4px; height: 48px;
+      background: var(--orange);
+      margin: 28px 0 0 0;
+    }
+
+    /* TRANSCRIPT */
+    .transcript-section { margin-top: 24px; }
+    .transcript-box {
+      border-left: 4px solid var(--orange);
+      padding-left: 16px;
+    }
+    .msg { margin-bottom: 20px; }
+    .msg-label {
+      font-size: 10px; font-weight: 900; letter-spacing: .18em;
+      text-transform: uppercase; margin-bottom: 4px;
+    }
+    .msg.coach .msg-label { color: var(--orange); }
+    .msg.user  .msg-label { color: var(--mid); }
+    .msg-text { font-size: 16px; line-height: 1.55; color: var(--black); font-weight: 400; }
+    .msg.user .msg-text { color: #555; }
+
+    /* FOOTER */
+    footer {
+      padding: 20px; text-align: center;
+      font-size: 11px; color: var(--mid);
+      letter-spacing: .05em;
+      border-top: 1px solid #eee;
+      margin-top: 32px;
+    }
+    footer a { color: var(--orange); text-decoration: none; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo"></div>
+  <div class="brand">
+    <div class="brand-main">Heiko Rössel</div>
+    <div class="brand-sub">Systemischer Coach</div>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Systemischer<br>Coach</h1>
+  <p>Basierend auf dem Podcast<br>Systemisch Denken</p>
+</div>
+
+<div class="content">
+
+  <!-- ORB -->
+  <div class="orb-section">
+    <div class="orb-ring idle" id="orb" onclick="toggleSession()">
+      <div class="orb-inner">
+        <span class="orb-icon" id="orbIcon">🎙</span>
+      </div>
+    </div>
+    <div class="status-text" id="statusText">Tippen zum Starten</div>
+  </div>
+
+  <!-- GESCHWINDIGKEIT -->
+  <div class="speed-section">
+    <div class="section-label">Geschwindigkeit</div>
+    <div class="speed-btns">
+      <button class="speed-btn" onclick="setSpeed('slow')">Langsam</button>
+      <button class="speed-btn selected" onclick="setSpeed('normal')">Normal</button>
+      <button class="speed-btn" onclick="setSpeed('fast')">Schnell</button>
+    </div>
+  </div>
+
+  <!-- STIMME -->
+  <div class="voice-section">
+    <div class="section-label">Stimme</div>
+    <div class="voice-grid">
+      <button class="voice-btn selected" onclick="setVoice('alloy')">Alloy</button>
+      <button class="voice-btn" onclick="setVoice('echo')">Echo</button>
+      <button class="voice-btn" onclick="setVoice('fable')">Fable</button>
+      <button class="voice-btn" onclick="setVoice('onyx')">Onyx</button>
+      <button class="voice-btn" onclick="setVoice('nova')">Nova</button>
+      <button class="voice-btn" onclick="setVoice('shimmer')">Shimmer</button>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <button class="main-btn" id="mainBtn" onclick="toggleSession()">Gespräch beginnen</button>
+  <button class="mute-btn" id="muteBtn" onclick="toggleMute()" style="display:none">Mikrofon stumm</button>
+
+  <!-- TRANSCRIPT -->
+  <div id="transcriptSection" style="display:none">
+    <div class="divider"></div>
+    <div class="transcript-section">
+      <div class="section-label">Gesprächsverlauf</div>
+      <div class="transcript-box" id="transcript"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a href="https://www.heikoroessel.com">heikoroessel.com</a> &nbsp;·&nbsp;
+  <a href="/admin">Admin</a>
+</footer>
+
+<script>
+  let pc=null, dc=null, stream=null, audio=null, active=false, muted=false;
+  let selectedSpeed='normal', selectedVoice='alloy';
+
+  const orb=document.getElementById('orb');
+  const orbIcon=document.getElementById('orbIcon');
+  const statusEl=document.getElementById('statusText');
+  const mainBtn=document.getElementById('mainBtn');
+  const muteBtn=document.getElementById('muteBtn');
+  const transcript=document.getElementById('transcript');
+  const transcriptSection=document.getElementById('transcriptSection');
+
+  function setStatus(t, isActive=false){
+    statusEl.textContent=t;
+    statusEl.className='status-text'+(isActive?' active':'');
+  }
+  function setOrb(state){
+    orb.className='orb-ring '+state;
+    orbIcon.textContent=state==='idle'?'🎙':state==='listening'?'👂':'💬';
+  }
+  function setSpeed(s){
+    selectedSpeed=s;
+    document.querySelectorAll('.speed-btn').forEach(b=>{
+      b.classList.toggle('selected', b.textContent.toLowerCase().includes(
+        s==='slow'?'langsam':s==='fast'?'schnell':'normal'));
+    });
+  }
+  function setVoice(v){
+    selectedVoice=v;
+    document.querySelectorAll('.voice-btn').forEach(b=>{
+      b.classList.toggle('selected', b.textContent.toLowerCase()===v);
+    });
+  }
+  function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function addMsg(role, text){
+    if(!text.trim())return;
+    const d=document.createElement('div');
+    d.className='msg '+role;
+    d.innerHTML=`<div class="msg-label">${role==='coach'?'Coach':'Du'}</div><div class="msg-text">${esc(text)}</div>`;
+    transcript.appendChild(d);
+    transcript.scrollIntoView({behavior:'smooth', block:'end'});
+  }
+
+  async function toggleSession(){
+    if(active){await endSession();}else{await startSession();}
+  }
+
+  async function startSession(){
+    setStatus('Verbinde …', true);
+    mainBtn.disabled=true;
+    try{
+      const res=await fetch('/api/session',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({voice:selectedVoice, speed:selectedSpeed})});
+      if(!res.ok)throw new Error('Session-Fehler');
+      const data=await res.json();
+      const key=data.client_secret?.value;
+      if(!key)throw new Error('Kein Token');
+
+      stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      pc=new RTCPeerConnection();
+      audio=document.createElement('audio'); audio.autoplay=true;
+      pc.ontrack=e=>{audio.srcObject=e.streams[0];};
+      stream.getAudioTracks().forEach(t=>pc.addTrack(t,stream));
+      dc=pc.createDataChannel('oai-events');
+      dc.onmessage=handleEvent;
+
+      const offer=await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      const sdpRes=await fetch('https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+key,'Content-Type':'application/sdp'},
+        body:offer.sdp});
+      if(!sdpRes.ok)throw new Error('OpenAI Fehler');
+      await pc.setRemoteDescription({type:'answer',sdp:await sdpRes.text()});
+
+      active=true;
+      setOrb('listening'); setStatus('Hört zu …', true);
+      mainBtn.textContent='Gespräch beenden';
+      mainBtn.className='main-btn ending';
+      mainBtn.disabled=false;
+      muteBtn.style.display='block';
+      transcriptSection.style.display='block';
+    }catch(err){
+      console.error(err);
+      setStatus('Fehler: '+err.message);
+      mainBtn.disabled=false; setOrb('idle');
+      if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+    }
+  }
+
+  async function endSession(){
+    if(dc)dc.close(); if(pc)pc.close();
+    if(stream)stream.getTracks().forEach(t=>t.stop());
+    if(audio)audio.srcObject=null;
+    pc=dc=stream=audio=null; active=false; muted=false;
+    setOrb('idle'); setStatus('Gespräch beendet.');
+    mainBtn.textContent='Neues Gespräch';
+    mainBtn.className='main-btn';
+    mainBtn.disabled=false;
+    muteBtn.style.display='none';
+    muteBtn.className='mute-btn';
+    muteBtn.textContent='Mikrofon stumm';
+  }
+
+  function toggleMute(){
+    if(!stream)return;
+    muted=!muted;
+    stream.getAudioTracks().forEach(t=>{t.enabled=!muted;});
+    muteBtn.textContent=muted?'Mikrofon an':'Mikrofon stumm';
+    muteBtn.className='mute-btn'+(muted?' muted':'');
+    setStatus(muted?'Mikrofon stumm':'Hört zu …', !muted);
+  }
+
+  function handleEvent(evt){
+    let e; try{e=JSON.parse(evt.data);}catch{return;}
+    switch(e.type){
+      case 'input_audio_buffer.speech_started':
+        setOrb('listening'); setStatus('Ich höre …', true); break;
+      case 'input_audio_buffer.speech_stopped':
+        setOrb('idle'); setStatus('Denke nach …', true); break;
+      case 'response.audio.started':
+        setOrb('speaking'); setStatus('Coach spricht …', true); break;
+      case 'response.audio_transcript.done':
+        if(e.transcript)addMsg('coach',e.transcript);
+        setOrb('listening'); setStatus('Hört zu …', true); break;
+      case 'conversation.item.input_audio_transcription.completed':
+        if(e.transcript)addMsg('user',e.transcript); break;
+      case 'error':
+        console.error(e.error); setStatus('Fehler aufgetreten.'); break;
+    }
+  }
+</script>
+</body>
+</html>
