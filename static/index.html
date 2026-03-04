@@ -1,250 +1,256 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Systemischer Coach</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Systemisch Denken – KI Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --sage:    #7a9e8e;
-      --deep:    #1a2e28;
-      --warm:    #f5f0e8;
-      --mist:    #c8d8d2;
-      --accent:  #c4956a;
-      --text:    #2d3a35;
-      --light:   #e8f0ec;
+      --orange: #F47C20;
+      --orange-dark: #d96a10;
+      --black: #111111;
+      --white: #ffffff;
+      --grey:  #f5f5f5;
+      --mid:   #666666;
     }
+    html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--white); color: var(--black); }
 
-    html, body {
-      height: 100%;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--warm);
-      color: var(--text);
+    /* TOP BAR */
+    .topbar {
+      background: var(--white);
+      border-bottom: 3px solid var(--orange);
+      padding: 1rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
     }
-
-    /* ── Background ── */
-    body::before {
+    .logo-box {
+      width: 40px; height: 40px;
+      background: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-box::after {
       content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(122,158,142,.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(196,149,106,.12) 0%, transparent 60%),
-        var(--warm);
+      width: 16px; height: 16px;
+      border: 3px solid var(--white);
+    }
+    .brand-name {
+      font-size: 1rem; font-weight: 900; letter-spacing: .04em;
+      text-transform: uppercase; line-height: 1.1;
+    }
+    .brand-sub {
+      font-size: .72rem; font-weight: 400; color: var(--mid);
+      letter-spacing: .08em; text-transform: uppercase;
     }
 
-    /* ── Layout ── */
-    .shell {
-      position: relative; z-index: 1;
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center;
+    /* HERO */
+    .hero {
+      background: var(--orange);
+      padding: 2.5rem 1.5rem 3rem;
+      text-align: left;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 8vw, 3.5rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.0;
+      text-transform: uppercase;
+      letter-spacing: -.01em;
+      margin-bottom: .5rem;
+    }
+    .hero p {
+      font-size: 1rem; color: rgba(255,255,255,.85);
+      font-style: italic; font-weight: 400;
+    }
+
+    /* SETTINGS BAR */
+    .settings-bar {
+      background: var(--grey);
+      border-bottom: 1px solid #e0e0e0;
+      padding: .75rem 1.5rem;
+      display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+    }
+    .settings-bar label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--mid);
+      margin-right: .3rem;
+    }
+    .settings-bar select {
+      font-family: 'Barlow', sans-serif;
+      font-size: .82rem; font-weight: 700;
+      border: 2px solid var(--black);
+      background: var(--white);
+      padding: .3rem .6rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .settings-bar select:focus { border-color: var(--orange); }
+
+    /* MAIN */
+    .main {
+      max-width: 680px; margin: 0 auto;
       padding: 2rem 1.5rem 4rem;
     }
 
-    /* ── Header ── */
-    header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    .wordmark {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      font-weight: 300;
-      letter-spacing: .12em;
-      color: var(--deep);
-    }
-    .wordmark em { font-style: italic; color: var(--sage); }
-    .tagline {
-      margin-top: .4rem;
-      font-size: .78rem;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--sage);
-      opacity: .8;
-    }
-
-    /* ── Orb ── */
+    /* ORB */
     .orb-wrap {
-      position: relative;
-      width: clamp(160px, 40vw, 220px);
+      width: clamp(140px, 35vw, 180px);
       aspect-ratio: 1;
-      margin: 0 auto 2.5rem;
+      margin: 0 auto 2rem;
+      position: relative;
       cursor: pointer;
     }
     .orb {
       position: absolute; inset: 0;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%,
-        rgba(255,255,255,.55),
-        rgba(122,158,142,.35) 45%,
-        rgba(26,46,40,.55) 100%);
-      box-shadow:
-        0 0 0 1px rgba(122,158,142,.3),
-        0 8px 40px rgba(26,46,40,.18),
-        inset 0 1px 0 rgba(255,255,255,.4);
-      transition: transform .3s ease, box-shadow .3s ease;
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.6), var(--orange) 60%, var(--orange-dark));
+      box-shadow: 0 0 0 4px var(--orange), 0 8px 32px rgba(244,124,32,.35);
+      transition: transform .25s ease, box-shadow .25s ease;
     }
     .orb-wrap:hover .orb { transform: scale(1.04); }
 
     /* Pulse rings */
     .ring {
-      position: absolute; inset: -12px;
-      border-radius: 50%;
-      border: 1px solid rgba(122,158,142,.25);
-      opacity: 0;
-      animation: none;
+      position: absolute; border-radius: 50%;
+      border: 2px solid rgba(244,124,32,.4);
+      opacity: 0; animation: none;
     }
-    .ring:nth-child(2) { inset: -24px; border-color: rgba(122,158,142,.15); }
-    .ring:nth-child(3) { inset: -38px; border-color: rgba(122,158,142,.08); }
-
-    .orb-wrap.listening .ring {
-      animation: pulse 2s ease-out infinite;
-    }
-    .orb-wrap.listening .ring:nth-child(2) { animation-delay: .4s; }
-    .orb-wrap.listening .ring:nth-child(3) { animation-delay: .8s; }
-
+    .ring:nth-child(2) { inset: -14px; border-color: rgba(244,124,32,.25); }
+    .ring:nth-child(3) { inset: -28px; border-color: rgba(244,124,32,.12); }
+    .ring:nth-child(4) { inset: -44px; border-color: rgba(244,124,32,.06); }
+    .orb-wrap.listening .ring { animation: pulse 1.8s ease-out infinite; }
+    .orb-wrap.listening .ring:nth-child(3) { animation-delay: .4s; }
+    .orb-wrap.listening .ring:nth-child(4) { animation-delay: .8s; }
     @keyframes pulse {
-      0%   { opacity: 0; transform: scale(.9); }
+      0%   { opacity: 0; transform: scale(.85); }
       40%  { opacity: 1; }
-      100% { opacity: 0; transform: scale(1.15); }
+      100% { opacity: 0; transform: scale(1.2); }
     }
-
-    /* Speaking animation */
-    .orb-wrap.speaking .orb {
-      animation: breathe 1.4s ease-in-out infinite;
-    }
+    .orb-wrap.speaking .orb { animation: breathe 1.2s ease-in-out infinite; }
     @keyframes breathe {
-      0%, 100% { transform: scale(1); }
-      50%       { transform: scale(1.07); }
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.08); }
     }
 
-    /* ── Status ── */
-    .status {
-      text-align: center;
-      margin-bottom: 2rem;
-      min-height: 3.5rem;
-    }
+    /* STATUS */
+    .status { text-align: center; margin-bottom: 2rem; }
     .status-label {
-      font-size: .72rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--sage);
-      margin-bottom: .3rem;
+      font-size: .68rem; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--mid); font-weight: 700; margin-bottom: .25rem;
     }
     .status-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      color: var(--deep);
-      font-style: italic;
-      min-height: 1.6rem;
+      font-size: 1.1rem; font-weight: 700; color: var(--black);
+      text-transform: uppercase; letter-spacing: .04em;
+      min-height: 1.5rem;
     }
 
-    /* ── Controls ── */
-    .controls { display: flex; gap: 1rem; justify-content: center; }
-
+    /* CONTROLS */
+    .controls { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
     .btn {
-      border: none; cursor: pointer;
-      border-radius: 100px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: .8rem;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      padding: .7rem 1.8rem;
-      transition: all .2s ease;
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900; font-size: .8rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      border: none; cursor: pointer; padding: .8rem 2rem;
+      transition: all .15s ease;
     }
-    .btn-primary {
-      background: var(--deep);
-      color: var(--warm);
-      box-shadow: 0 4px 20px rgba(26,46,40,.25);
-    }
-    .btn-primary:hover { background: var(--sage); transform: translateY(-1px); }
-    .btn-secondary {
-      background: transparent;
-      color: var(--sage);
-      border: 1px solid var(--mist);
-    }
-    .btn-secondary:hover { background: var(--light); }
-    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+    .btn-primary { background: var(--orange); color: var(--white); }
+    .btn-primary:hover { background: var(--orange-dark); }
+    .btn-secondary { background: var(--black); color: var(--white); }
+    .btn-secondary:hover { background: #333; }
+    .btn-outline { background: transparent; color: var(--black); border: 2px solid var(--black); }
+    .btn-outline:hover { background: var(--black); color: var(--white); }
+    .btn:disabled { opacity: .35; cursor: not-allowed; }
 
-    /* ── Transcript ── */
-    .transcript-wrap {
-      width: 100%; max-width: 640px;
-      margin-top: 3rem;
-    }
+    /* TRANSCRIPT */
+    .transcript-wrap { margin-top: 1rem; }
     .transcript-label {
-      font-size: .7rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--sage);
-      opacity: .7;
-      margin-bottom: 1rem;
-      text-align: center;
+      font-size: .68rem; font-weight: 900; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--orange);
+      margin-bottom: .75rem; border-left: 3px solid var(--orange);
+      padding-left: .6rem;
     }
     .transcript-scroll {
-      max-height: 320px;
-      overflow-y: auto;
-      padding: 1.5rem;
-      background: rgba(255,255,255,.5);
-      border: 1px solid rgba(122,158,142,.2);
-      border-radius: 1rem;
-      backdrop-filter: blur(6px);
+      max-height: 340px; overflow-y: auto;
+      border: 2px solid var(--black);
+      padding: 1.25rem;
+      background: var(--white);
     }
     .transcript-scroll::-webkit-scrollbar { width: 4px; }
-    .transcript-scroll::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 2px; }
-
-    .msg {
-      margin-bottom: 1.2rem;
-      display: flex; flex-direction: column;
-    }
+    .transcript-scroll::-webkit-scrollbar-thumb { background: var(--orange); }
+    .msg { margin-bottom: 1.2rem; }
     .msg-role {
-      font-size: .65rem; letter-spacing: .18em; text-transform: uppercase;
-      margin-bottom: .25rem;
-      opacity: .6;
+      font-size: .65rem; font-weight: 900; letter-spacing: .18em;
+      text-transform: uppercase; margin-bottom: .2rem;
     }
-    .msg.coach .msg-role { color: var(--sage); }
-    .msg.user  .msg-role { color: var(--accent); text-align: right; }
-    .msg-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem; line-height: 1.6;
-      color: var(--deep);
-    }
+    .msg.coach .msg-role { color: var(--orange); }
+    .msg.user  .msg-role { color: var(--mid); text-align: right; }
+    .msg-text { font-size: .92rem; line-height: 1.6; color: var(--black); }
     .msg.user .msg-text { text-align: right; }
+    .empty-state { font-style: italic; color: var(--mid); font-size: .9rem; }
 
-    .empty-state {
-      text-align: center;
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      color: var(--sage);
-      opacity: .6;
-      font-size: 1rem;
+    /* DIVIDER */
+    .divider {
+      height: 4px; background: var(--orange);
+      margin: 2rem 0; width: 60px;
     }
 
-    /* ── Error Toast ── */
+    /* TOAST */
     .toast {
-      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-      background: #c0392b; color: white;
-      padding: .7rem 1.5rem; border-radius: 100px;
-      font-size: .8rem; z-index: 999;
-      opacity: 0; pointer-events: none;
-      transition: opacity .3s;
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: var(--black); color: var(--white);
+      padding: .7rem 1.5rem; font-size: .8rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      z-index: 999; opacity: 0; pointer-events: none; transition: opacity .3s;
     }
     .toast.show { opacity: 1; }
 
     @media (max-width: 480px) {
-      .controls { flex-direction: column; align-items: center; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .btn { text-align: center; }
     }
   </style>
 </head>
 <body>
-<div class="shell">
-  <header>
-    <div class="wordmark">Systemischer <em>Coach</em></div>
-    <div class="tagline">Gespräch · Reflexion · Entwicklung</div>
-  </header>
 
+<div class="topbar">
+  <div class="logo-box"></div>
+  <div>
+    <div class="brand-name">Heiko Rössel</div>
+    <div class="brand-sub">Systemisch Denken – KI Coach</div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>Denkraum.<br>Gespräch.<br>Klarheit.</h1>
+  <p>Dein digitaler Coach – basierend auf dem Podcast Systemisch Denken</p>
+</div>
+
+<div class="settings-bar">
+  <div>
+    <label>Stimme</label>
+    <select id="voiceSelect">
+      <option value="alloy">Alloy (neutral)</option>
+      <option value="echo">Echo (tief)</option>
+      <option value="fable">Fable (warm)</option>
+      <option value="onyx">Onyx (männlich)</option>
+      <option value="nova">Nova (weiblich)</option>
+      <option value="shimmer">Shimmer (hell)</option>
+    </select>
+  </div>
+  <div>
+    <label>Geschwindigkeit</label>
+    <select id="speedSelect">
+      <option value="0.85">Langsam</option>
+      <option value="1.0">Normal</option>
+      <option value="1.2" selected>Etwas schneller</option>
+      <option value="1.4">Schnell</option>
+    </select>
+  </div>
+</div>
+
+<div class="main">
   <div class="orb-wrap" id="orb" onclick="toggleSession()">
     <div class="orb"></div>
     <div class="ring"></div>
@@ -254,17 +260,15 @@
 
   <div class="status">
     <div class="status-label">Status</div>
-    <div class="status-text" id="statusText">Berühre den Kreis, um zu beginnen</div>
+    <div class="status-text" id="statusText">Klicken zum Starten</div>
   </div>
 
   <div class="controls">
-    <button class="btn btn-primary" id="mainBtn" onclick="toggleSession()">
-      Gespräch beginnen
-    </button>
-    <button class="btn btn-secondary" id="muteBtn" onclick="toggleMute()" style="display:none">
-      Mikrofon stumm
-    </button>
+    <button class="btn btn-primary" id="mainBtn" onclick="toggleSession()">Gespräch beginnen</button>
+    <button class="btn btn-outline" id="muteBtn" onclick="toggleMute()" style="display:none">Mikrofon stumm</button>
   </div>
+
+  <div class="divider"></div>
 
   <div class="transcript-wrap" id="transcriptWrap" style="display:none">
     <div class="transcript-label">Gesprächsverlauf</div>
@@ -277,197 +281,108 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── State ──────────────────────────────────────────────────────────────────
-  let pc = null;          // RTCPeerConnection
-  let dc = null;          // DataChannel
-  let localStream = null;
-  let audioEl = null;
-  let sessionActive = false;
-  let muted = false;
-  const messages = [];
+  let pc=null, dc=null, localStream=null, audioEl=null, sessionActive=false, muted=false;
+  const orb=document.getElementById('orb');
+  const statusText=document.getElementById('statusText');
+  const mainBtn=document.getElementById('mainBtn');
+  const muteBtn=document.getElementById('muteBtn');
+  const transcript=document.getElementById('transcript');
+  const transcriptWrap=document.getElementById('transcriptWrap');
+  const toast=document.getElementById('toast');
 
-  // ── DOM refs ───────────────────────────────────────────────────────────────
-  const orb       = document.getElementById('orb');
-  const statusText = document.getElementById('statusText');
-  const mainBtn    = document.getElementById('mainBtn');
-  const muteBtn    = document.getElementById('muteBtn');
-  const transcript = document.getElementById('transcript');
-  const transcriptWrap = document.getElementById('transcriptWrap');
-  const toast      = document.getElementById('toast');
+  function setStatus(t){statusText.textContent=t;}
+  function setOrb(s){orb.classList.remove('listening','speaking');if(s)orb.classList.add(s);}
+  function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),4000);}
+  function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-  // ── UI helpers ─────────────────────────────────────────────────────────────
-  function setStatus(text) { statusText.textContent = text; }
-  function setOrbState(state) {
-    orb.classList.remove('listening','speaking','idle');
-    if (state) orb.classList.add(state);
-  }
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 4000);
+  function addMsg(role, text){
+    if(!text.trim())return;
+    if(transcript.querySelector('.empty-state'))transcript.innerHTML='';
+    const d=document.createElement('div');
+    d.className='msg '+role;
+    d.innerHTML=`<div class="msg-role">${role==='coach'?'Coach':'Du'}</div><div class="msg-text">${esc(text)}</div>`;
+    transcript.appendChild(d);
+    transcript.scrollTop=transcript.scrollHeight;
   }
 
-  function addMessage(role, text) {
-    if (!text.trim()) return;
-    messages.push({ role, text });
-    if (transcript.querySelector('.empty-state')) transcript.innerHTML = '';
-    const div = document.createElement('div');
-    div.className = `msg ${role}`;
-    div.innerHTML = `
-      <span class="msg-role">${role === 'coach' ? 'Coach' : 'Du'}</span>
-      <span class="msg-text">${escapeHtml(text)}</span>
-    `;
-    transcript.appendChild(div);
-    transcript.scrollTop = transcript.scrollHeight;
+  async function toggleSession(){
+    if(sessionActive){await endSession();}else{await startSession();}
   }
 
-  function escapeHtml(t) {
-    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  // ── Session ────────────────────────────────────────────────────────────────
-  async function toggleSession() {
-    if (sessionActive) {
-      await endSession();
-    } else {
-      await startSession();
-    }
-  }
-
-  async function startSession() {
+  async function startSession(){
     setStatus('Verbinde …');
-    mainBtn.disabled = true;
+    mainBtn.disabled=true;
+    try{
+      const voice=document.getElementById('voiceSelect').value;
+      const speed=parseFloat(document.getElementById('speedSelect').value);
+      const tokenRes=await fetch('/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({voice,speed})});
+      if(!tokenRes.ok)throw new Error('Session-Fehler '+tokenRes.status);
+      const tokenData=await tokenRes.json();
+      const key=tokenData.client_secret?.value;
+      if(!key)throw new Error('Kein Token');
 
-    try {
-      // 1. Get ephemeral token from our backend
-      const tokenRes = await fetch('/api/session', { method: 'POST' });
-      if (!tokenRes.ok) throw new Error(`Token Fehler: ${tokenRes.status}`);
-      const tokenData = await tokenRes.json();
-      const ephemeralKey = tokenData.client_secret?.value;
-      if (!ephemeralKey) throw new Error('Kein Session-Token erhalten');
+      localStream=await navigator.mediaDevices.getUserMedia({audio:true});
+      pc=new RTCPeerConnection();
+      audioEl=document.createElement('audio');audioEl.autoplay=true;
+      pc.ontrack=e=>{audioEl.srcObject=e.streams[0];};
+      localStream.getAudioTracks().forEach(t=>pc.addTrack(t,localStream));
+      dc=pc.createDataChannel('oai-events');
+      dc.onmessage=handleEvent;
 
-      // 2. Get microphone
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      // 3. Set up WebRTC peer connection
-      pc = new RTCPeerConnection();
-
-      // Remote audio → play
-      audioEl = document.createElement('audio');
-      audioEl.autoplay = true;
-      pc.ontrack = e => { audioEl.srcObject = e.streams[0]; };
-
-      // Local audio → send
-      localStream.getAudioTracks().forEach(track => pc.addTrack(track, localStream));
-
-      // 4. Data channel for events
-      dc = pc.createDataChannel('oai-events');
-      dc.onopen  = () => console.log('DataChannel open');
-      dc.onmessage = handleServerEvent;
-
-      // 5. Create SDP offer
-      const offer = await pc.createOffer();
+      const offer=await pc.createOffer();
       await pc.setLocalDescription(offer);
+      const sdpRes=await fetch('https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+key,'Content-Type':'application/sdp'},
+        body:offer.sdp
+      });
+      if(!sdpRes.ok)throw new Error('OpenAI Fehler '+sdpRes.status);
+      await pc.setRemoteDescription({type:'answer',sdp:await sdpRes.text()});
 
-      // 6. Send offer to OpenAI Realtime
-      const sdpRes = await fetch(
-        'https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17',
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${ephemeralKey}`,
-            'Content-Type': 'application/sdp',
-          },
-          body: offer.sdp,
-        }
-      );
-      if (!sdpRes.ok) throw new Error(`OpenAI Fehler: ${sdpRes.status}`);
-      const answerSdp = await sdpRes.text();
-      await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
-
-      // ── UI update ──
-      sessionActive = true;
-      setOrbState('listening');
-      setStatus('Hört zu …');
-      mainBtn.textContent = 'Gespräch beenden';
-      mainBtn.disabled = false;
-      muteBtn.style.display = 'block';
-      transcriptWrap.style.display = 'block';
-
-    } catch (err) {
-      console.error(err);
-      showToast('Fehler: ' + err.message);
-      setStatus('Verbindung fehlgeschlagen');
-      mainBtn.disabled = false;
-      setOrbState('');
-      if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+      sessionActive=true;
+      setOrb('listening');setStatus('Hört zu …');
+      mainBtn.textContent='Gespräch beenden';mainBtn.disabled=false;
+      muteBtn.style.display='block';
+      transcriptWrap.style.display='block';
+    }catch(err){
+      console.error(err);showToast('Fehler: '+err.message);
+      setStatus('Verbindung fehlgeschlagen');mainBtn.disabled=false;setOrb('');
+      if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
     }
   }
 
-  async function endSession() {
-    if (dc)          { dc.close();  dc = null; }
-    if (pc)          { pc.close();  pc = null; }
-    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-    if (audioEl)     { audioEl.srcObject = null; audioEl = null; }
-
-    sessionActive = false;
-    setOrbState('');
-    setStatus('Gespräch beendet. Danke.');
-    mainBtn.textContent = 'Neues Gespräch';
-    mainBtn.disabled = false;
-    muteBtn.style.display = 'none';
-    muted = false;
+  async function endSession(){
+    if(dc)dc.close();if(pc)pc.close();
+    if(localStream)localStream.getTracks().forEach(t=>t.stop());
+    if(audioEl)audioEl.srcObject=null;
+    pc=dc=localStream=audioEl=null;
+    sessionActive=false;muted=false;
+    setOrb('');setStatus('Gespräch beendet.');
+    mainBtn.textContent='Neues Gespräch';mainBtn.disabled=false;
+    muteBtn.style.display='none';
   }
 
-  function toggleMute() {
-    if (!localStream) return;
-    muted = !muted;
-    localStream.getAudioTracks().forEach(t => { t.enabled = !muted; });
-    muteBtn.textContent = muted ? 'Mikrofon an' : 'Mikrofon stumm';
-    setStatus(muted ? 'Mikrofon stummgeschaltet' : 'Hört zu …');
+  function toggleMute(){
+    if(!localStream)return;
+    muted=!muted;
+    localStream.getAudioTracks().forEach(t=>{t.enabled=!muted;});
+    muteBtn.textContent=muted?'Mikrofon an':'Mikrofon stumm';
+    setStatus(muted?'Mikrofon stumm':'Hört zu …');
   }
 
-  // ── Server Events ──────────────────────────────────────────────────────────
-  function handleServerEvent(evt) {
-    let event;
-    try { event = JSON.parse(evt.data); } catch { return; }
-
-    switch (event.type) {
-      case 'session.created':
-      case 'session.updated':
-        setStatus('Bereit. Sprich jetzt.');
-        break;
-
-      case 'input_audio_buffer.speech_started':
-        setOrbState('listening');
-        setStatus('Ich höre …');
-        break;
-
-      case 'input_audio_buffer.speech_stopped':
-        setOrbState('');
-        setStatus('Denke nach …');
-        break;
-
-      case 'response.audio.started':
-      case 'response.audio_transcript.delta':
-        setOrbState('speaking');
-        setStatus('Coach spricht …');
-        break;
-
+  function handleEvent(evt){
+    let e;try{e=JSON.parse(evt.data);}catch{return;}
+    switch(e.type){
+      case 'input_audio_buffer.speech_started': setOrb('listening');setStatus('Ich höre …');break;
+      case 'input_audio_buffer.speech_stopped': setOrb('');setStatus('Denke nach …');break;
+      case 'response.audio.started': setOrb('speaking');setStatus('Coach spricht …');break;
       case 'response.audio_transcript.done':
-        if (event.transcript) addMessage('coach', event.transcript);
-        setOrbState('listening');
-        setStatus('Hört zu …');
-        break;
-
+        if(e.transcript)addMsg('coach',e.transcript);
+        setOrb('listening');setStatus('Hört zu …');break;
       case 'conversation.item.input_audio_transcription.completed':
-        if (event.transcript) addMessage('user', event.transcript);
-        break;
-
+        if(e.transcript)addMsg('user',e.transcript);break;
       case 'error':
-        console.error('OpenAI error:', event.error);
-        showToast('Verbindungsfehler: ' + (event.error?.message || 'Unbekannt'));
-        break;
+        console.error(e.error);showToast('Fehler: '+(e.error?.message||'Unbekannt'));break;
     }
   }
 </script>
