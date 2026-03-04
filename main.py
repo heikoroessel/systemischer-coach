@@ -1,6 +1,9 @@
 """
-Systemischer Coach - FastAPI Backend v2
-Features: MP3-Splitter, Prompt-Editor, Episoden-Links, Stimme/Geschwindigkeit
+Systemischer Coach - FastAPI Backend v3
+- Prompt in Pinecone gespeichert (bleibt bei Updates erhalten)
+- Episode-Metadaten nachtraeglich bearbeitbar
+- MP3-Splitter fuer grosse Dateien
+- Episoden-Links (Website, Spotify, Apple)
 """
 import os, re, uuid, json, math, logging
 from pathlib import Path
@@ -13,7 +16,7 @@ import openai, tiktoken, httpx
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Systemischer Coach API v2")
+app = FastAPI(title="Systemischer Coach v3")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 OPENAI_API_KEY   = os.environ.get("OPENAI_API_KEY", "")
@@ -22,11 +25,19 @@ PINECONE_INDEX   = os.environ.get("PINECONE_INDEX", "systemischer-coach")
 ADMIN_PASSWORD   = os.environ.get("ADMIN_PASSWORD", "coach2024")
 
 openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
-PROMPT_FILE = Path("coach_prompt.json")
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# helpers
+DEFAULT_PROMPT = {
+    "role": "Du bist ein systemischer Coach, der auf den Inhalten des Podcasts 'Systemisch Denken' von Heiko Roessel basiert. Du sprichst Deutsch und verhaeltst dich wie ein erfahrener systemischer Coach.",
+    "behavior": "- Du fuehrst echte Coaching-Gespraeche, keine Beratung\n- Du stellst oeffnende Fragen statt Ratschlaege zu geben\n- Du arbeitest mit zirkulaeren Fragen, Reframing, Ressourcenorientierung\n- Du bist empathisch, praesent und wertschaetzend\n- Stelle maximal eine Frage auf einmal\n- Sprich in einem zügigen, klaren Tempo - nicht zu langsam\n- Kurze, klare Saetze",
+    "interventions": "- Nach 3-4 Fragen teilst du eine Beobachtung oder ein Muster das du erkennst\n- Du spiegelst Woerter die du immer wieder hoerst\n- Bei passenden Themen empfiehlst du proaktiv eine Podcast-Episode\n- Wenn jemand nach Episoden fragt: nenne den Titel und frage welchen Link du senden soll - Website, Spotify oder Apple Podcasts\n- Verwende IMMER den gespeicherten Link aus der Datenbank - erfinde NIEMALS einen Link",
+    "principles": "- Jeder Mensch hat alle Ressourcen die er braucht\n- Probleme entstehen im Kontext - Loesungen auch\n- Du arbeitest loesungs- und ressourcenorientiert\n- Du fragst nach Ausnahmen, Wundern und kleinen Schritten",
+    "greeting": "Beginne herzlich. Stelle dich kurz als digitaler Coach vor, der auf dem Podcast Systemisch Denken von Heiko Roessel basiert. Frage was den Gespraechspartner heute bewegt.",
+    "voice": "alloy"
+}
+
+# ── Pinecone ──────────────────────────────────────────────────────────────────
+
 def get_index():
     from pinecone import Pinecone, ServerlessSpec
     pc = Pinecone(api_key=PINECONE_API_KEY)
@@ -34,6 +45,64 @@ def get_index():
         pc.create_index(name=PINECONE_INDEX, dimension=1536, metric="cosine",
                         spec=ServerlessSpec(cloud="aws", region="us-east-1"))
     return pc.Index(PINECONE_INDEX)
+
+def save_prompt_to_pinecone(config: dict):
+    """Store prompt config as a special vector in Pinecone."""
+    try:
+        index = get_index()
+        # Use a fixed dummy vector for config storage
+        dummy = [0.0] * 1536
+        dummy[0] = 1.0  # distinguish from real vectors
+        index.upsert(vectors=[{
+            "id": "__coach_prompt_config__",
+            "values": dummy,
+            "metadata": {"type": "config", "data": json.dumps(config, ensure_ascii=False)}
+        }])
+        logger.info("Prompt saved to Pinecone")
+    except Exception as e:
+        logger.error(f"Failed to save prompt: {e}")
+
+def load_prompt_from_pinecone() -> dict:
+    """Load prompt config from Pinecone."""
+    try:
+        index = get_index()
+        result = index.fetch(ids=["__coach_prompt_config__"])
+        if result and result.vectors and "__coach_prompt_config__" in result.vectors:
+            data = result.vectors["__coach_prompt_config__"].metadata.get("data", "{}")
+            config = json.loads(data)
+            merged = DEFAULT_PROMPT.copy()
+            merged.update(config)
+            return merged
+    except Exception as e:
+        logger.error(f"Failed to load prompt: {e}")
+    return DEFAULT_PROMPT.copy()
+
+def build_prompt(config=None, speed="normal") -> str:
+    if config is None:
+        config = load_prompt_from_pinecone()
+    speed_instruction = {
+        "slow":   "Sprich in einem ruhigen, langsamen Tempo mit deutlichen Pausen.",
+        "normal": "Sprich in einem natuerlichen, klaren Tempo.",
+        "fast":   "Sprich in einem zuegigen, energischen Tempo - keine langen Pausen."
+    }.get(speed, "Sprich in einem natuerlichen Tempo.")
+    return f"""
+{config.get('role','')}
+
+TEMPO: {speed_instruction}
+
+VERHALTEN:
+{config.get('behavior','')}
+
+INTERVENTIONEN & EPISODEN:
+{config.get('interventions','')}
+
+SYSTEMISCHE PRINZIPIEN:
+{config.get('principles','')}
+
+{config.get('greeting','')}
+""".strip()
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
 def chunk_text(text, episode_title, chunk_size=500, overlap=50):
     enc = tiktoken.get_encoding("cl100k_base")
@@ -66,50 +135,12 @@ def split_mp3(path, max_bytes=24*1024*1024):
     parts = []
     for i in range(n):
         p = path.parent / f"{path.stem}_p{i}.mp3"
-        p.write_bytes(data[i*sz : (i+1)*sz if i < n-1 else len(data)])
+        p.write_bytes(data[i*sz:(i+1)*sz if i < n-1 else len(data)])
         parts.append(p)
     return parts
 
-def load_prompt():
-    default = {
-        "role": "Du bist ein systemischer Coach, der auf den Inhalten des Podcasts 'Systemisch Denken' von Heiko Roessel basiert. Du sprichst Deutsch und verhaeltst dich wie ein erfahrener systemischer Coach.",
-        "behavior": "- Du fuehrst echte Coaching-Gespraeche, keine Beratung\n- Du stellst oeffnende Fragen statt Ratschlaege zu geben\n- Du arbeitest mit zirkulaeren Fragen, Reframing, Ressourcenorientierung\n- Du bist empathisch, praesent und wertschaetzend\n- Stelle maximal eine Frage auf einmal\n- Sprich in kurzen Saetzen fuer den Sprachdialog",
-        "interventions": "- Nach 3-4 Fragen teilst du eine Beobachtung oder ein Muster das du erkennst\n- Du spiegelst Woerter die du immer wieder hoerst\n- Bei passenden Themen empfiehlst du proaktiv eine Podcast-Episode\n- Wenn jemand nach Episoden fragt, empfiehlst du gezielt mit Titel und fragst welchen Link du senden sollst: Website, Spotify oder Apple Podcasts",
-        "principles": "- Jeder Mensch hat alle Ressourcen die er braucht\n- Probleme entstehen im Kontext - Loesungen auch\n- Du arbeitest loesungs- und ressourcenorientiert\n- Du fragst nach Ausnahmen, Wundern und kleinen Schritten",
-        "greeting": "Beginne mit einer herzlichen Begruassung. Stelle dich kurz als digitaler Coach vor, der auf dem Podcast Systemisch Denken von Heiko Roessel basiert. Frage dann was den Gesprachspartner heute bewegt.",
-        "voice": "alloy",
-        "speed": 1.2
-    }
-    if PROMPT_FILE.exists():
-        try:
-            saved = json.loads(PROMPT_FILE.read_text(encoding="utf-8"))
-            default.update(saved)
-        except Exception:
-            pass
-    return default
+# ── Routes ────────────────────────────────────────────────────────────────────
 
-def save_prompt(config):
-    PROMPT_FILE.write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding="utf-8")
-
-def build_prompt(config=None):
-    if config is None:
-        config = load_prompt()
-    return f"""
-{config.get('role','')}
-
-VERHALTEN:
-{config.get('behavior','')}
-
-INTERVENTIONEN UND EPISODEN:
-{config.get('interventions','')}
-
-SYSTEMISCHE PRINZIPIEN:
-{config.get('principles','')}
-
-{config.get('greeting','')}
-""".strip()
-
-# routes
 @app.get("/", response_class=HTMLResponse)
 async def coach():
     return HTMLResponse(open("static/index.html", encoding="utf-8").read())
@@ -128,8 +159,9 @@ async def session(request: Request):
         body = await request.json()
     except Exception:
         body = {}
-    config = load_prompt()
+    config = load_prompt_from_pinecone()
     voice = body.get("voice", config.get("voice", "alloy"))
+    speed = body.get("speed", "normal")
     async with httpx.AsyncClient() as client:
         resp = await client.post(
             "https://api.openai.com/v1/realtime/sessions",
@@ -137,7 +169,7 @@ async def session(request: Request):
             json={
                 "model": "gpt-4o-realtime-preview-2024-12-17",
                 "voice": voice,
-                "instructions": build_prompt(config),
+                "instructions": build_prompt(config, speed),
                 "input_audio_transcription": {"model": "whisper-1"},
                 "turn_detection": {"type": "server_vad", "threshold": 0.5,
                                    "prefix_padding_ms": 300, "silence_duration_ms": 700}
@@ -148,7 +180,7 @@ async def session(request: Request):
 async def get_prompt(password: str):
     if password != ADMIN_PASSWORD:
         raise HTTPException(status_code=401, detail="Falsches Passwort")
-    return load_prompt()
+    return load_prompt_from_pinecone()
 
 @app.post("/api/prompt")
 async def set_prompt(request: Request):
@@ -156,7 +188,7 @@ async def set_prompt(request: Request):
     if data.get("password") != ADMIN_PASSWORD:
         raise HTTPException(status_code=401, detail="Falsches Passwort")
     config = {k: v for k, v in data.items() if k != "password"}
-    save_prompt(config)
+    save_prompt_to_pinecone(config)
     return {"success": True}
 
 @app.post("/api/upload-mp3")
@@ -175,19 +207,14 @@ async def upload(
         raise HTTPException(status_code=400, detail="Nur MP3 erlaubt")
 
     tmp = Path(f"/tmp/{uuid.uuid4().hex}.mp3")
-    parts = []
+    extra = []
     try:
         tmp.write_bytes(await file.read())
         parts = split_mp3(tmp)
         extra = [p for p in parts if p != tmp]
-        logger.info(f"Split into {len(parts)} part(s)")
-
         transcript = " ".join(str(transcribe(p)) for p in parts).strip()
-        logger.info(f"Transcribed: {len(transcript)} chars")
-
         tmp.unlink(missing_ok=True)
-        for p in extra:
-            p.unlink(missing_ok=True)
+        for p in extra: p.unlink(missing_ok=True)
 
         chunks = chunk_text(transcript, episode_title)
         index = get_index()
@@ -205,16 +232,97 @@ async def upload(
             index.upsert(vectors=vecs)
             total += len(vecs)
 
-        return {"success": True, "episode": episode_title, "parts": len(parts),
-                "transcript_length": len(transcript), "chunks": len(chunks),
-                "vectors": total,
-                "preview": transcript[:500] + ("..." if len(transcript) > 500 else "")}
+        # Save episode registry entry
+        _save_episode_registry(index, episode_title, episode_number, link_website, link_spotify, link_apple)
 
+        return {"success": True, "episode": episode_title, "parts": len(parts),
+                "transcript_length": len(transcript), "chunks": len(chunks), "vectors": total,
+                "preview": transcript[:500] + ("..." if len(transcript) > 500 else "")}
     except Exception as e:
         tmp.unlink(missing_ok=True)
-        for p in parts:
+        for p in extra:
             try: p.unlink(missing_ok=True)
             except: pass
+        raise HTTPException(status_code=500, detail=str(e))
+
+def _save_episode_registry(index, title, number, link_web, link_spotify, link_apple):
+    """Save episode metadata in a registry entry for editing later."""
+    try:
+        ep_id = f"__episode_registry__{re.sub(r'[^a-zA-Z0-9]', '_', title)[:50]}"
+        dummy = [0.0] * 1536
+        dummy[1] = 1.0
+        index.upsert(vectors=[{
+            "id": ep_id,
+            "values": dummy,
+            "metadata": {
+                "type": "episode_registry",
+                "episode": title,
+                "episode_number": number,
+                "link_website": link_web,
+                "link_spotify": link_spotify,
+                "link_apple": link_apple,
+            }
+        }])
+    except Exception as e:
+        logger.error(f"Registry save failed: {e}")
+
+@app.get("/api/episodes")
+async def list_episodes(password: str):
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Falsches Passwort")
+    try:
+        index = get_index()
+        # Query with registry dummy vector
+        dummy = [0.0] * 1536
+        dummy[1] = 1.0
+        results = index.query(vector=dummy, top_k=200, include_metadata=True,
+                              filter={"type": {"$eq": "episode_registry"}})
+        episodes = []
+        for m in results.matches:
+            md = m.metadata
+            if md.get("type") == "episode_registry":
+                episodes.append({
+                    "id": m.id,
+                    "episode": md.get("episode", ""),
+                    "episode_number": md.get("episode_number", ""),
+                    "link_website": md.get("link_website", ""),
+                    "link_spotify": md.get("link_spotify", ""),
+                    "link_apple": md.get("link_apple", ""),
+                })
+        return {"episodes": episodes}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/episodes/update")
+async def update_episode(request: Request):
+    data = await request.json()
+    if data.get("password") != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Falsches Passwort")
+    try:
+        index = get_index()
+        ep_id = data["id"]
+        index.update(id=ep_id, set_metadata={
+            "link_website": data.get("link_website", ""),
+            "link_spotify": data.get("link_spotify", ""),
+            "link_apple":   data.get("link_apple", ""),
+            "episode_number": data.get("episode_number", ""),
+        })
+        # Also update all content chunks for this episode
+        episode_title = data.get("episode", "")
+        if episode_title:
+            dummy_q = [0.0] * 1536
+            dummy_q[2] = 1.0
+            chunks = index.query(vector=dummy_q, top_k=500, include_metadata=True,
+                                 filter={"episode": {"$eq": episode_title}})
+            for match in chunks.matches:
+                if match.metadata.get("type") != "episode_registry":
+                    index.update(id=match.id, set_metadata={
+                        "link_website": data.get("link_website", ""),
+                        "link_spotify": data.get("link_spotify", ""),
+                        "link_apple":   data.get("link_apple", ""),
+                    })
+        return {"success": True}
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/stats")
