@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Admin – Systemischer Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #F47C20;
+      --black: #111;
+      --white: #fff;
+      --grey: #f4f4f4;
+      --mid: #888;
+      --green: #27ae60;
+      --red: #e74c3c;
+    }
+    html, body { font-family: 'Barlow', sans-serif; font-weight: 300; background: var(--light); color: var(--black); -webkit-font-smoothing: antialiased; }
+
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; background: var(--white);
+      border-bottom: 1px solid #ebebeb;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .brand-main { font-size: 15px; font-weight: 400; letter-spacing: .01em; }
+    .brand-sub { font-size: 11px; font-weight: 300; color: var(--mid); letter-spacing: .04em; }
+    .back { font-size: 12px; font-weight: 300; color: var(--mid); text-decoration: none; letter-spacing: .06em; }
+    .back:hover { color: var(--orange); }
+
+    /* PASSWORD GATE */
+    .pw-gate {
+      padding: 60px 28px; text-align: center; max-width: 380px; margin: 0 auto;
+    }
+    .pw-gate p { font-size: 13px; font-weight: 300; color: var(--mid); margin-bottom: 28px; }
+    .pw-input {
+      width: 100%; max-width: 320px; padding: 14px 16px;
+      font-family: 'Barlow', sans-serif; font-size: 16px;
+      border: 2px solid var(--black); background: var(--white);
+      outline: none; display: block; margin: 0 auto 12px;
+    }
+    .pw-input:focus { border-color: var(--orange); }
+    .pw-btn {
+      width: 100%; max-width: 320px;
+      padding: 16px; font-family: 'Barlow', sans-serif;
+      font-size: 14px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+      background: var(--orange); color: var(--white); border: none; cursor: pointer;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex; background: var(--white);
+      border-bottom: 1px solid #ebebeb;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .tab {
+      padding: 14px 20px; font-family: 'Barlow', sans-serif;
+      font-size: 11px; font-weight: 300; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--mid); border: none; background: transparent; cursor: pointer;
+      white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -1px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tab.active { color: var(--black); border-bottom-color: var(--orange); font-weight: 400; }
+
+    .tab-content { display: none; padding: 20px; }
+    .tab-content.active { display: block; }
+
+    /* CARDS */
+    .card { background: var(--white); padding: 24px; margin-bottom: 12px; border: 1px solid #ebebeb; }
+    .card-title {
+      font-size: 10px; font-weight: 400; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 20px;
+    }
+
+    /* STATS */
+    .stat-val { font-size: 36px; font-weight: 900; color: var(--orange); }
+    .stat-label { font-size: 11px; color: var(--mid); text-transform: uppercase; letter-spacing: .1em; }
+
+    /* FORM */
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    input[type=text], textarea {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid #e0e0e0; background: var(--white);
+      font-family: 'Barlow', sans-serif; font-size: 15px; color: var(--black);
+      outline: none; resize: vertical; -webkit-appearance: none;
+    }
+    input:focus, textarea:focus { border-color: var(--orange); }
+    textarea { min-height: 100px; }
+
+    /* DROPZONE */
+    .dropzone {
+      border: 2px dashed #ccc; padding: 28px 20px; text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .dropzone.drag, .dropzone:active { border-color: var(--orange); background: rgba(244,124,32,.04); }
+    .dropzone-icon { font-size: 28px; margin-bottom: 8px; }
+    .dropzone p { font-size: 14px; color: var(--mid); line-height: 1.5; }
+    .dropzone strong { color: var(--orange); }
+    .file-name { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--orange); }
+    #fileInput { display: none; }
+
+    /* STEPS */
+    .steps { margin-top: 16px; display: none; }
+    .progress-bar { height: 4px; background: #eee; margin-bottom: 12px; }
+    .progress-fill { height: 100%; width: 0%; background: var(--orange); transition: width .4s; }
+    .step { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 14px; color: var(--mid); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #ddd; flex-shrink: 0; }
+    .step.active { color: var(--black); font-weight: 700; }
+    .step.active .dot { background: var(--orange); }
+    .step.done { color: var(--green); font-weight: 700; }
+    .step.done .dot { background: var(--green); }
+
+    /* RESULT */
+    .result { display: none; margin-top: 16px; padding: 16px; border: 2px solid; }
+    .result.success { border-color: var(--green); }
+    .result.error   { border-color: var(--red); }
+    .result-title { font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
+    .result.success .result-title { color: var(--green); }
+    .result.error   .result-title { color: var(--red); }
+    .result-row { display: flex; justify-content: space-between; font-size: 14px; padding: 5px 0; border-bottom: 1px solid #f0f0f0; }
+    .result-row:last-child { border: none; }
+    .result-row b { color: var(--orange); }
+    .preview-text { margin-top: 10px; font-size: 13px; color: var(--mid); line-height: 1.5; background: var(--grey); padding: 10px; }
+
+    /* BTNS */
+    .btn {
+      display: block; width: 100%; padding: 16px;
+      font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 900;
+      letter-spacing: .08em; text-transform: uppercase;
+      border: none; cursor: pointer; text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity .15s;
+    }
+    .btn:active { opacity: .8; }
+    .btn:disabled { opacity: .4; }
+    .btn-orange { background: var(--orange); color: var(--white); border: none; }
+    .btn-black  { background: var(--black); color: var(--white); border: none; }
+    .btn-outline { background: transparent; color: var(--black); border: 1px solid #ccc; font-weight: 300; }
+    .btn + .btn { margin-top: 10px; }
+
+    /* EPISODE LIST */
+    .ep-item { background: var(--white); padding: 16px; margin-bottom: 8px; border-left: 3px solid var(--orange); }
+    .ep-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .ep-links { font-size: 12px; color: var(--mid); }
+    .ep-edit-btn { font-size: 12px; font-weight: 700; color: var(--orange); border: none; background: none; cursor: pointer; padding: 0; margin-top: 8px; }
+
+    /* EDIT PANEL */
+    .edit-panel { display: none; background: var(--grey); padding: 16px; margin-top: 10px; }
+    .edit-panel.open { display: block; }
+
+    /* SAVE BANNER */
+    .save-ok { display: none; background: var(--green); color: var(--white); padding: 12px 16px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-top: 12px; }
+
+    /* PROMPT SECTIONS */
+    .prompt-group { margin-bottom: 20px; }
+    .prompt-group h3 { font-size: 12px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; color: var(--orange); margin-bottom: 4px; }
+    .hint { font-size: 12px; color: var(--mid); margin-bottom: 8px; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo"></div>
+  <div>
+    <div class="brand-main">Admin</div>
+    <div class="brand-sub">Systemischer Coach</div>
+  </div>
+  <a href="/" class="back">← Coach</a>
+</header>
+
+<!-- PASSWORD GATE -->
+<div id="pwGate" class="pw-gate">
+  <h2>Anmelden</h2>
+  <p>Bitte Admin-Passwort eingeben</p>
+  <input type="password" class="pw-input" id="pwInput" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()"/>
+  <button class="pw-btn" onclick="doLogin()">Weiter</button>
+  <p id="pwError" style="color:var(--red);font-size:13px;margin-top:12px;display:none">Falsches Passwort</p>
+</div>
+
+<!-- MAIN APP (hidden until login) -->
+<div id="mainApp" style="display:none">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('upload',this)">Episoden</button>
+    <button class="tab" onclick="showTab('episodes',this)">Bearbeiten</button>
+    <button class="tab" onclick="showTab('prompt',this)">Coach-Prompt</button>
+    <button class="tab" onclick="showTab('stats',this)">Statistiken</button>
+  </div>
+
+  <!-- UPLOAD TAB -->
+  <div class="tab-content active" id="tab-upload">
+    <div class="card">
+      <div class="card-title">Episode hochladen</div>
+
+      <div class="field">
+        <label>Episoden-Titel</label>
+        <input type="text" id="epTitle" placeholder="z.B. PSD 315 – Singularität"/>
+      </div>
+      <div class="field">
+        <label>Nummer (optional)</label>
+        <input type="text" id="epNumber" placeholder="315"/>
+      </div>
+      <div class="field">
+        <label>Link Website</label>
+        <input type="text" id="epWeb" placeholder="https://www.heikoroessel.com/..."/>
+      </div>
+      <div class="field">
+        <label>Link Spotify</label>
+        <input type="text" id="epSpotify" placeholder="https://open.spotify.com/..."/>
+      </div>
+      <div class="field">
+        <label>Link Apple Podcasts</label>
+        <input type="text" id="epApple" placeholder="https://podcasts.apple.com/..."/>
+      </div>
+
+      <div class="field">
+        <label>MP3-Datei (auch über 25 MB)</label>
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+          <div class="dropzone-icon">🎙</div>
+          <p><strong>Tippen zum Auswählen</strong><br>oder MP3 hierher ziehen<br>Große Dateien werden automatisch aufgeteilt</p>
+          <div class="file-name" id="fileName"></div>
+        </div>
+        <input type="file" id="fileInput" accept=".mp3"/>
+      </div>
+
+      <div class="steps" id="steps">
+        <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+        <div class="step" id="s1"><div class="dot"></div>MP3 wird hochgeladen</div>
+        <div class="step" id="s2"><div class="dot"></div>Whisper transkribiert</div>
+        <div class="step" id="s3"><div class="dot"></div>Text in Chunks aufgeteilt</div>
+        <div class="step" id="s4"><div class="dot"></div>Embeddings erstellt</div>
+        <div class="step" id="s5"><div class="dot"></div>In Pinecone gespeichert</div>
+      </div>
+
+      <div class="result" id="result">
+        <div class="result-title" id="resultTitle"></div>
+        <div id="resultBody"></div>
+      </div>
+
+      <button class="btn btn-orange" id="uploadBtn" onclick="doUpload()" style="margin-top:16px">Jetzt verarbeiten</button>
+    </div>
+  </div>
+
+  <!-- EPISODES TAB -->
+  <div class="tab-content" id="tab-episodes">
+    <div style="padding-bottom:8px">
+      <button class="btn btn-outline" onclick="loadEpisodes()" style="margin-bottom:16px">Episoden laden</button>
+      <div id="epList"><p style="font-size:14px;color:var(--mid)">Klicke "Episoden laden" um die Liste anzuzeigen.</p></div>
+    </div>
+  </div>
+
+  <!-- PROMPT TAB -->
+  <div class="tab-content" id="tab-prompt">
+    <div class="card">
+      <div class="card-title">Coach-Prompt konfigurieren</div>
+      <p class="hint" style="margin-bottom:16px">Der Prompt wird dauerhaft in Pinecone gespeichert – bleibt auch nach Code-Updates erhalten.</p>
+
+      <div class="prompt-group">
+        <h3>Rolle</h3>
+        <p class="hint">Wer ist dieser Coach? Auf welchem Wissen basiert er?</p>
+        <textarea id="pRole" rows="4"></textarea>
+      </div>
+      <div class="prompt-group">
+        <h3>Verhalten & Gesprächsführung</h3>
+        <p class="hint">Wie verhält er sich? Welche Regeln gelten?</p>
+        <textarea id="pBehavior" rows="6"></textarea>
+      </div>
+      <div class="prompt-group">
+        <h3>Interventionen & Episoden</h3>
+        <p class="hint">Wann bringt er Beobachtungen? Wie empfiehlt er Episoden?</p>
+        <textarea id="pInterventions" rows="6"></textarea>
+      </div>
+      <div class="prompt-group">
+        <h3>Systemische Prinzipien</h3>
+        <textarea id="pPrinciples" rows="5"></textarea>
+      </div>
+      <div class="prompt-group">
+        <h3>Begrüßung</h3>
+        <textarea id="pGreeting" rows="3"></textarea>
+      </div>
+
+      <button class="btn btn-outline" onclick="loadPrompt()">Aktuellen Prompt laden</button>
+      <button class="btn btn-black" onclick="savePrompt()" style="margin-top:10px">Prompt speichern</button>
+      <div class="save-ok" id="saveOk">✓ Gespeichert – aktiv beim nächsten Gespräch</div>
+    </div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div class="tab-content" id="tab-stats">
+    <div class="card">
+      <div class="card-title">Datenbank</div>
+      <div style="display:flex;gap:32px;margin-bottom:20px">
+        <div><div class="stat-val" id="statVec">—</div><div class="stat-label">Vektoren</div></div>
+        <div><div class="stat-val" id="statEp">—</div><div class="stat-label">Episoden ca.</div></div>
+      </div>
+      <button class="btn btn-orange" onclick="loadStats()">Aktualisieren</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let PW = '';
+
+  // LOGIN
+  async function doLogin(){
+    const pw = document.getElementById('pwInput').value.trim();
+    if(!pw) return;
+    try{
+      const r = await fetch('/api/stats?password='+encodeURIComponent(pw));
+      if(!r.ok){ document.getElementById('pwError').style.display='block'; return; }
+      PW = pw;
+      document.getElementById('pwGate').style.display='none';
+      document.getElementById('mainApp').style.display='block';
+      loadStats();
+    }catch(e){
+      document.getElementById('pwError').style.display='block';
+    }
+  }
+  document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+  // TABS
+  function showTab(id, btn){
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // DROPZONE
+  const dz=document.getElementById('dropzone');
+  const fi=document.getElementById('fileInput');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault(); dz.classList.remove('drag');
+    if(e.dataTransfer.files[0]){fi.files=e.dataTransfer.files; showFile(e.dataTransfer.files[0]);}
+  });
+  fi.addEventListener('change',()=>{ if(fi.files[0]) showFile(fi.files[0]); });
+  function showFile(f){ document.getElementById('fileName').textContent=f.name+' · '+(f.size/1024/1024).toFixed(1)+' MB'; }
+
+  // STEPS
+  function setStep(n){
+    for(let i=1;i<=5;i++){
+      const el=document.getElementById('s'+i);
+      el.className='step'+(i<n?' done':i===n?' active':'');
+    }
+    document.getElementById('progFill').style.width=Math.min(((n-1)/4)*95,95)+'%';
+  }
+
+  // UPLOAD
+  async function doUpload(){
+    const title=document.getElementById('epTitle').value.trim();
+    const file=fi.files[0];
+    if(!title){alert('Bitte Episoden-Titel eingeben');return;}
+    if(!file){alert('Bitte MP3 auswählen');return;}
+
+    document.getElementById('uploadBtn').disabled=true;
+    document.getElementById('steps').style.display='block';
+    document.getElementById('result').style.display='none';
+    setStep(1);
+
+    try{
+      const fd=new FormData();
+      fd.append('file',file);
+      fd.append('episode_title',title);
+      fd.append('episode_number',document.getElementById('epNumber').value);
+      fd.append('link_website',document.getElementById('epWeb').value);
+      fd.append('link_spotify',document.getElementById('epSpotify').value);
+      fd.append('link_apple',document.getElementById('epApple').value);
+      fd.append('password',PW);
+
+      setStep(2);
+      const res=await fetch('/api/upload-mp3',{method:'POST',body:fd});
+      setStep(4);
+      if(!res.ok){const e=await res.json();throw new Error(e.detail||'Fehler');}
+      const d=await res.json();
+      setStep(5);
+      document.getElementById('progFill').style.width='100%';
+      // Mark last step done
+      document.getElementById('s5').className='step done';
+
+      const r=document.getElementById('result');
+      r.className='result success'; r.style.display='block';
+      document.getElementById('resultTitle').textContent='Erfolgreich verarbeitet';
+      document.getElementById('resultBody').innerHTML=`
+        <div class="result-row"><span>Episode</span><b>${d.episode}</b></div>
+        <div class="result-row"><span>Teile</span><b>${d.parts}</b></div>
+        <div class="result-row"><span>Zeichen</span><b>${d.transcript_length.toLocaleString()}</b></div>
+        <div class="result-row"><span>Vektoren</span><b>${d.vectors}</b></div>
+        <div class="preview-text">${d.preview}</div>
+      `;
+      loadStats();
+    }catch(err){
+      const r=document.getElementById('result');
+      r.className='result error'; r.style.display='block';
+      document.getElementById('resultTitle').textContent='Fehler';
+      document.getElementById('resultBody').innerHTML=`<div style="color:var(--red);font-size:14px">${err.message}</div>`;
+    }finally{
+      document.getElementById('uploadBtn').disabled=false;
+    }
+  }
+
+  // STATS
+  async function loadStats(){
+    try{
+      const r=await fetch('/api/stats?password='+encodeURIComponent(PW));
+      if(!r.ok)return;
+      const d=await r.json();
+      document.getElementById('statVec').textContent=d.total_vectors.toLocaleString();
+      document.getElementById('statEp').textContent='~'+Math.round(d.total_vectors/8);
+    }catch(e){}
+  }
+
+  // EPISODES
+  async function loadEpisodes(){
+    const list=document.getElementById('epList');
+    list.innerHTML='<p style="font-size:14px;color:var(--mid)">Lade …</p>';
+    try{
+      const r=await fetch('/api/episodes?password='+encodeURIComponent(PW));
+      if(!r.ok)throw new Error('Fehler');
+      const d=await r.json();
+      if(!d.episodes.length){list.innerHTML='<p style="font-size:14px;color:var(--mid)">Noch keine Episoden gefunden.</p>';return;}
+      list.innerHTML='';
+      d.episodes.forEach(ep=>{
+        const div=document.createElement('div');
+        div.className='ep-item';
+        div.innerHTML=`
+          <div class="ep-title">${ep.episode} ${ep.episode_number?'#'+ep.episode_number:''}</div>
+          <div class="ep-links">
+            ${ep.link_website?'🌐 Website':'❌ Kein Website-Link'} &nbsp;
+            ${ep.link_spotify?'🎵 Spotify':'❌ Kein Spotify'} &nbsp;
+            ${ep.link_apple?'🍎 Apple':'❌ Kein Apple'}
+          </div>
+          <button class="ep-edit-btn" onclick="toggleEdit(this,'${ep.id}')">Links bearbeiten ▼</button>
+          <div class="edit-panel" id="ep-${ep.id}">
+            <div class="field"><label>Website</label><input type="text" id="ew-${ep.id}" value="${ep.link_website||''}"/></div>
+            <div class="field"><label>Spotify</label><input type="text" id="es-${ep.id}" value="${ep.link_spotify||''}"/></div>
+            <div class="field"><label>Apple</label><input type="text" id="ea-${ep.id}" value="${ep.link_apple||''}"/></div>
+            <button class="btn btn-orange" onclick="saveEpisode('${ep.id}','${ep.episode}')" style="margin-top:8px">Speichern</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }catch(e){list.innerHTML='<p style="color:var(--red);font-size:14px">Fehler beim Laden</p>';}
+  }
+
+  function toggleEdit(btn, id){
+    const panel=document.getElementById('ep-'+id);
+    const open=panel.classList.toggle('open');
+    btn.textContent=open?'Schließen ▲':'Links bearbeiten ▼';
+  }
+
+  async function saveEpisode(id, episode){
+    try{
+      const r=await fetch('/api/episodes/update',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          password:PW, id,episode,
+          link_website:document.getElementById('ew-'+id).value,
+          link_spotify:document.getElementById('es-'+id).value,
+          link_apple:document.getElementById('ea-'+id).value,
+        })});
+      if(!r.ok)throw new Error('Fehler');
+      alert('Gespeichert!');
+      loadEpisodes();
+    }catch(e){alert('Fehler: '+e.message);}
+  }
+
+  // PROMPT
+  async function loadPrompt(){
+    try{
+      const r=await fetch('/api/prompt?password='+encodeURIComponent(PW));
+      if(!r.ok){alert('Fehler beim Laden');return;}
+      const d=await r.json();
+      document.getElementById('pRole').value=d.role||'';
+      document.getElementById('pBehavior').value=d.behavior||'';
+      document.getElementById('pInterventions').value=d.interventions||'';
+      document.getElementById('pPrinciples').value=d.principles||'';
+      document.getElementById('pGreeting').value=d.greeting||'';
+    }catch(e){alert('Fehler: '+e.message);}
+  }
+
+  async function savePrompt(){
+    try{
+      const r=await fetch('/api/prompt',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          password:PW,
+          role:document.getElementById('pRole').value,
+          behavior:document.getElementById('pBehavior').value,
+          interventions:document.getElementById('pInterventions').value,
+          principles:document.getElementById('pPrinciples').value,
+          greeting:document.getElementById('pGreeting').value,
+        })});
+      if(!r.ok){alert('Fehler beim Speichern');return;}
+      const ok=document.getElementById('saveOk');
+      ok.style.display='block';
+      setTimeout(()=>ok.style.display='none',4000);
+    }catch(e){alert('Fehler: '+e.message);}
+  }
+</script>
+</body>
+</html>

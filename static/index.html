@@ -1,1 +1,485 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Systemischer Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #F47C20;
+      --black: #1a1a1a;
+      --white: #ffffff;
+      --light: #f8f8f8;
+      --mid: #999999;
+      --border: #e8e8e8;
+    }
+    html, body {
+      height: 100%; min-height: 100vh;
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      background: var(--white);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+    }
 
+    /* PAGE */
+    .page {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 48px 28px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+    .header-title {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--black);
+      letter-spacing: .01em;
+      margin-bottom: 6px;
+    }
+    .header-sub {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--mid);
+      letter-spacing: .04em;
+      line-height: 1.6;
+    }
+
+    /* ORB */
+    .orb-wrap {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      cursor: pointer;
+      margin-bottom: 20px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .orb-outer {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      transition: border-color .3s;
+    }
+    .orb-inner {
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: var(--light);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .3s;
+    }
+    .orb-icon {
+      font-size: 28px;
+      transition: all .3s;
+    }
+
+    /* States */
+    .orb-wrap.active .orb-outer { border-color: var(--orange); }
+    .orb-wrap.active .orb-inner { background: var(--orange); }
+    .orb-wrap.speaking .orb-inner { animation: breathe 1.2s ease-in-out infinite; }
+    .orb-wrap.listening .orb-outer { animation: ring-pulse 2s ease-in-out infinite; }
+    @keyframes breathe {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    @keyframes ring-pulse {
+      0%,100% { border-color: var(--orange); opacity: 1; }
+      50% { border-color: var(--orange); opacity: .4; }
+    }
+
+    /* STATUS */
+    .status {
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 40px;
+      min-height: 16px;
+      transition: color .3s;
+    }
+    .status.active { color: var(--orange); }
+
+    /* MAIN BUTTON */
+    .main-btn {
+      width: 100%;
+      padding: 15px 24px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: 1px solid var(--black);
+      background: transparent;
+      color: var(--black);
+      cursor: pointer;
+      transition: all .2s;
+      -webkit-tap-highlight-color: transparent;
+      margin-bottom: 48px;
+    }
+    .main-btn.running {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+    }
+    .main-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+    /* SETTINGS */
+    .settings {
+      width: 100%;
+      margin-bottom: 40px;
+    }
+    .settings-label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    /* SPEED */
+    .speed-row {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .speed-btn {
+      flex: 1;
+      padding: 9px 4px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: .06em;
+      text-align: center;
+      border: none;
+      border-right: 1px solid var(--border);
+      background: transparent;
+      color: var(--mid);
+      cursor: pointer;
+      transition: all .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .speed-btn:last-child { border-right: none; }
+    .speed-btn.on {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    /* VOICE */
+    .voice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    .voice-btn {
+      padding: 8px 4px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: .04em;
+      text-align: center;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--mid);
+      cursor: pointer;
+      transition: all .15s;
+      line-height: 1.3;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .voice-btn.on {
+      border-color: var(--black);
+      color: var(--black);
+      background: var(--light);
+    }
+    .voice-name { display: block; font-weight: 400; }
+    .voice-desc { display: block; font-size: 9px; color: var(--mid); margin-top: 2px; }
+    .voice-btn.on .voice-desc { color: var(--mid); }
+
+    /* DIVIDER */
+    .divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border);
+      margin: 0 auto 32px;
+    }
+
+    /* TRANSCRIPT */
+    .transcript { width: 100%; }
+    .transcript-label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .msg { margin-bottom: 20px; }
+    .msg-who {
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 5px;
+    }
+    .msg.coach .msg-who { color: var(--orange); }
+    .msg-text {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--black);
+    }
+    .msg-text a {
+      color: var(--orange);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(244,124,32,.3);
+      word-break: break-all;
+    }
+    .msg-text a:active { opacity: .7; }
+    .msg.user .msg-text { color: #888; }
+
+    /* FOOTER */
+    .footer {
+      margin-top: 48px;
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--border);
+      letter-spacing: .06em;
+      text-align: center;
+    }
+    .footer a { color: var(--mid); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-title">Systemischer Coach</div>
+    <div class="header-sub">
+      Basierend auf dem Podcast<br>
+      <em>Systemisch Denken</em> von Heiko Rössel
+    </div>
+  </div>
+
+  <!-- ORB -->
+  <div class="orb-wrap idle" id="orb" onclick="toggleSession()">
+    <div class="orb-outer"></div>
+    <div class="orb-inner">
+      <span class="orb-icon" id="orbIcon">▶</span>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="status" id="status">Tippen zum Starten</div>
+
+  <!-- BUTTON -->
+  <button class="main-btn" id="mainBtn" onclick="toggleSession()">
+    Gespräch beginnen
+  </button>
+
+  <!-- SETTINGS -->
+  <div class="settings">
+    <div class="settings-label">Vor dem Gespräch auswählen</div>
+
+    <div class="speed-row">
+      <button class="speed-btn" onclick="setSpeed('slow',this)">Langsam</button>
+      <button class="speed-btn on" onclick="setSpeed('normal',this)">Normal</button>
+      <button class="speed-btn" onclick="setSpeed('fast',this)">Schnell</button>
+    </div>
+
+    <div class="voice-grid">
+      <button class="voice-btn on" onclick="setVoice('nova',this)">
+        <span class="voice-name">Nova</span>
+        <span class="voice-desc">weiblich, warm</span>
+      </button>
+      <button class="voice-btn" onclick="setVoice('shimmer',this)">
+        <span class="voice-name">Shimmer</span>
+        <span class="voice-desc">weiblich, hell</span>
+      </button>
+      <button class="voice-btn" onclick="setVoice('alloy',this)">
+        <span class="voice-name">Alloy</span>
+        <span class="voice-desc">neutral</span>
+      </button>
+      <button class="voice-btn" onclick="setVoice('echo',this)">
+        <span class="voice-name">Echo</span>
+        <span class="voice-desc">männlich, klar</span>
+      </button>
+      <button class="voice-btn" onclick="setVoice('onyx',this)">
+        <span class="voice-name">Onyx</span>
+        <span class="voice-desc">männlich, tief</span>
+      </button>
+      <button class="voice-btn" onclick="setVoice('fable',this)">
+        <span class="voice-name">Fable</span>
+        <span class="voice-desc">warm, erzählend</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TRANSCRIPT -->
+  <div id="transcriptWrap" style="display:none; width:100%">
+    <div class="divider"></div>
+    <div class="transcript">
+      <div class="transcript-label">Gesprächsverlauf</div>
+      <div id="transcript"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="/admin">Admin</a>
+  </div>
+
+</div>
+
+<script>
+  let pc=null, dc=null, stream=null, audio=null, active=false;
+  let speed='normal', voice='nova';
+
+  const orb=document.getElementById('orb');
+  const orbIcon=document.getElementById('orbIcon');
+  const statusEl=document.getElementById('status');
+  const mainBtn=document.getElementById('mainBtn');
+  const transcript=document.getElementById('transcript');
+  const transcriptWrap=document.getElementById('transcriptWrap');
+
+  function setStatus(t, isActive=false){
+    statusEl.textContent=t;
+    statusEl.className='status'+(isActive?' active':'');
+  }
+  function setOrb(state){
+    orb.className='orb-wrap '+state;
+    orbIcon.textContent = state==='active'||state==='listening' ? '◼' :
+                          state==='speaking' ? '◉' : '▶';
+  }
+  function setSpeed(s, btn){
+    speed=s;
+    document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+  function setVoice(v, btn){
+    voice=v;
+    document.querySelectorAll('.voice-btn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+
+  function linkify(text){
+    const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return escaped.replace(/(https?:\/\/[^\s\)\]<]+)/g,
+      '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  }
+
+  function addMsg(role, text){
+    if(!text.trim()) return;
+    const d=document.createElement('div');
+    d.className='msg '+role;
+    d.innerHTML=`<div class="msg-who">${role==='coach'?'Coach':'Du'}</div><div class="msg-text">${linkify(text)}</div>`;
+    transcript.appendChild(d);
+    d.scrollIntoView({behavior:'smooth', block:'end'});
+  }
+
+  async function toggleSession(){
+    if(active){ await endSession(); }
+    else { await startSession(); }
+  }
+
+  async function startSession(){
+    setStatus('Verbinde …', true);
+    mainBtn.disabled=true;
+    try{
+      const res=await fetch('/api/session',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({voice, speed})
+      });
+      if(!res.ok) throw new Error('Session-Fehler '+res.status);
+      const data=await res.json();
+      const key=data.client_secret?.value;
+      if(!key) throw new Error('Kein Token erhalten');
+
+      stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      pc=new RTCPeerConnection();
+      audio=document.createElement('audio'); audio.autoplay=true;
+      pc.ontrack=e=>{ audio.srcObject=e.streams[0]; };
+      stream.getAudioTracks().forEach(t=>pc.addTrack(t,stream));
+      dc=pc.createDataChannel('oai-events');
+      dc.onmessage=handleEvent;
+
+      const offer=await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      const sdpRes=await fetch(
+        'https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17',
+        { method:'POST',
+          headers:{'Authorization':'Bearer '+key,'Content-Type':'application/sdp'},
+          body:offer.sdp }
+      );
+      if(!sdpRes.ok) throw new Error('OpenAI Fehler '+sdpRes.status);
+      await pc.setRemoteDescription({type:'answer', sdp:await sdpRes.text()});
+
+      active=true;
+      setOrb('listening');
+      setStatus('Hört zu …', true);
+      mainBtn.textContent='Gespräch beenden';
+      mainBtn.className='main-btn running';
+      mainBtn.disabled=false;
+      transcriptWrap.style.display='block';
+
+    }catch(err){
+      console.error(err);
+      setStatus('Fehler: '+err.message);
+      mainBtn.disabled=false;
+      setOrb('idle');
+      if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+    }
+  }
+
+  async function endSession(){
+    if(dc) dc.close();
+    if(pc) pc.close();
+    if(stream) stream.getTracks().forEach(t=>t.stop());
+    if(audio) audio.srcObject=null;
+    pc=dc=stream=audio=null;
+    active=false;
+    setOrb('idle');
+    setStatus('Gespräch beendet.');
+    mainBtn.textContent='Gespräch beginnen';
+    mainBtn.className='main-btn';
+    mainBtn.disabled=false;
+  }
+
+  function handleEvent(evt){
+    let e; try{ e=JSON.parse(evt.data); }catch{ return; }
+    switch(e.type){
+      case 'input_audio_buffer.speech_started':
+        setOrb('listening'); setStatus('Ich höre …', true); break;
+      case 'input_audio_buffer.speech_stopped':
+        setOrb('active'); setStatus('Denke nach …', true); break;
+      case 'response.audio.started':
+        setOrb('speaking'); setStatus('Coach spricht …', true); break;
+      case 'response.audio_transcript.done':
+        if(e.transcript) addMsg('coach', e.transcript);
+        setOrb('listening'); setStatus('Hört zu …', true); break;
+      case 'conversation.item.input_audio_transcription.completed':
+        if(e.transcript) addMsg('user', e.transcript); break;
+      case 'error':
+        console.error(e.error); setStatus('Fehler aufgetreten.'); break;
+    }
+  }
+</script>
+</body>
+</html>
