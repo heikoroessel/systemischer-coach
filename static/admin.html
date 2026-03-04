@@ -1,392 +1,437 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coach Admin – Wissensbasis</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin – Systemisch Denken Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;900&family=Barlow+Mono&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:    #0f1a17;
-      --card:  #162220;
-      --border:#2a3e38;
-      --sage:  #7a9e8e;
-      --mint:  #a8c5b8;
-      --warm:  #c4956a;
-      --text:  #d4e0dc;
-      --muted: #6a8880;
-      --green: #4caf85;
-      --red:   #e05252;
+      --orange: #F47C20;
+      --orange-dark: #d96a10;
+      --black: #111;
+      --white: #fff;
+      --grey: #f5f5f5;
+      --mid: #666;
+      --border: #ddd;
+      --green: #27ae60;
+      --red: #e74c3c;
     }
-    html, body {
-      min-height: 100vh;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(122,158,142,.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .shell {
-      position: relative; z-index: 1;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem;
-    }
+    html, body { font-family: 'Barlow', sans-serif; background: var(--grey); color: var(--black); min-height: 100vh; }
 
-    /* Header */
-    header { margin-bottom: 3rem; }
-    .back {
-      display: inline-flex; align-items: center; gap: .4rem;
-      font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
-      margin-bottom: 1.5rem;
+    .topbar {
+      background: var(--white); border-bottom: 3px solid var(--orange);
+      padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;
     }
-    .back:hover { color: var(--sage); }
-    h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.2rem; font-weight: 300;
-      color: var(--mint);
-      margin-bottom: .3rem;
-    }
-    .subtitle { font-size: .8rem; color: var(--muted); letter-spacing: .1em; }
+    .logo-box { width: 36px; height: 36px; background: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-box::after { content: ''; width: 14px; height: 14px; border: 3px solid var(--white); }
+    .brand-name { font-size: .95rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+    .brand-sub { font-size: .68rem; color: var(--mid); letter-spacing: .08em; text-transform: uppercase; }
+    .back-link { margin-left: auto; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--orange); text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
 
-    /* Cards */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 2rem;
-      margin-bottom: 1.5rem;
+    .shell { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    h2 { font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: -.01em; margin-bottom: .2rem; }
+    .page-sub { font-size: .8rem; color: var(--mid); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2rem; }
+
+    /* TABS */
+    .tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 3px solid var(--black); }
+    .tab {
+      padding: .7rem 1.5rem; font-family: 'Barlow', sans-serif;
+      font-weight: 900; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; border: none; background: transparent; color: var(--mid);
+      border-bottom: 3px solid transparent; margin-bottom: -3px;
+      transition: all .15s;
     }
+    .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+    .tab:hover { color: var(--black); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* CARDS */
+    .card { background: var(--white); border: 2px solid var(--black); padding: 1.75rem; margin-bottom: 1.5rem; }
     .card-title {
-      font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
-      color: var(--sage); margin-bottom: 1.5rem;
+      font-size: .7rem; font-weight: 900; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--orange);
+      border-left: 3px solid var(--orange); padding-left: .5rem;
+      margin-bottom: 1.25rem;
     }
 
-    /* Stats bar */
-    .stats-bar {
-      display: flex; gap: 2rem; flex-wrap: wrap;
-    }
-    .stat { flex: 1; min-width: 120px; }
-    .stat-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 1.8rem; color: var(--mint);
-    }
-    .stat-label { font-size: .72rem; color: var(--muted); margin-top: .2rem; }
+    /* STATS */
+    .stats-row { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .stat-val { font-size: 2.2rem; font-weight: 900; color: var(--orange); }
+    .stat-label { font-size: .72rem; color: var(--mid); text-transform: uppercase; letter-spacing: .1em; margin-top: .1rem; }
 
-    /* Form */
-    .field { margin-bottom: 1.2rem; }
-    label {
-      display: block; font-size: .72rem; letter-spacing: .15em;
-      text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
+    /* FORM */
+    .field { margin-bottom: 1.1rem; }
+    .field label { display: block; font-size: .72rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .4rem; }
+    input[type=text], input[type=password], textarea {
+      width: 100%; padding: .65rem .9rem;
+      border: 2px solid var(--black); background: var(--white);
+      font-family: 'Barlow', sans-serif; font-size: .9rem; color: var(--black);
+      outline: none; resize: vertical;
+      transition: border-color .15s;
     }
-    input[type="text"], input[type="password"] {
-      width: 100%; padding: .75rem 1rem;
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--border);
-      border-radius: .5rem;
-      color: var(--text); font-family: 'DM Sans', sans-serif;
-      font-size: .9rem;
-      outline: none;
-      transition: border-color .2s;
-    }
-    input:focus { border-color: var(--sage); }
+    input:focus, textarea:focus { border-color: var(--orange); }
+    textarea { min-height: 120px; }
 
-    /* Drop zone */
+    /* DROPZONE */
     .dropzone {
-      border: 2px dashed var(--border);
-      border-radius: .75rem;
-      padding: 2.5rem;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color .2s, background .2s;
+      border: 3px dashed var(--border); padding: 2rem; text-align: center;
+      cursor: pointer; transition: border-color .2s, background .2s;
     }
-    .dropzone:hover, .dropzone.drag { border-color: var(--sage); background: rgba(122,158,142,.05); }
-    .dropzone .icon { font-size: 2rem; margin-bottom: .75rem; }
-    .dropzone p { font-size: .85rem; color: var(--muted); }
-    .dropzone strong { color: var(--mint); }
+    .dropzone:hover, .dropzone.drag { border-color: var(--orange); background: rgba(244,124,32,.04); }
+    .dropzone .icon { font-size: 2rem; margin-bottom: .5rem; }
+    .dropzone p { font-size: .85rem; color: var(--mid); }
+    .dropzone strong { color: var(--orange); }
+    .file-info { margin-top: .5rem; font-size: .8rem; color: var(--orange); font-weight: 700; }
     #fileInput { display: none; }
-    .file-info {
-      margin-top: .75rem; font-size: .8rem;
-      color: var(--warm); font-family: 'DM Mono', monospace;
-    }
 
-    /* Progress */
-    .progress-wrap { margin-top: 1.5rem; display: none; }
-    .progress-label {
-      display: flex; justify-content: space-between;
-      font-size: .72rem; color: var(--muted); margin-bottom: .5rem;
-    }
-    .progress-bar {
-      height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%; width: 0%; background: var(--sage);
-      border-radius: 2px; transition: width .3s ease;
-      animation: shimmer 2s linear infinite;
-    }
-    @keyframes shimmer {
-      0%   { background-position: -200px 0; }
-      100% { background-position: 200px 0; }
-    }
-    .step-list { margin-top: 1rem; }
-    .step {
-      display: flex; align-items: center; gap: .75rem;
-      font-size: .8rem; color: var(--muted);
-      padding: .4rem 0;
-    }
-    .step .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--border); flex-shrink: 0;
-      transition: background .3s;
-    }
-    .step.active .dot { background: var(--sage); }
-    .step.done .dot   { background: var(--green); }
-    .step.active { color: var(--text); }
-    .step.done   { color: var(--green); }
+    /* PROGRESS */
+    .progress-wrap { margin-top: 1.25rem; display: none; }
+    .progress-bar { height: 6px; background: var(--border); margin-bottom: .75rem; }
+    .progress-fill { height: 100%; width: 0%; background: var(--orange); transition: width .3s; }
+    .step { display: flex; align-items: center; gap: .6rem; font-size: .8rem; color: var(--mid); padding: .3rem 0; }
+    .step .dot { width: 10px; height: 10px; background: var(--border); flex-shrink: 0; }
+    .step.active .dot { background: var(--orange); }
+    .step.done .dot { background: var(--green); }
+    .step.active { color: var(--black); font-weight: 700; }
+    .step.done { color: var(--green); font-weight: 700; }
 
-    /* Result */
-    .result-card {
-      margin-top: 1.5rem; padding: 1.2rem 1.5rem;
-      border-radius: .75rem; display: none;
-    }
-    .result-card.success { background: rgba(76,175,133,.08); border: 1px solid rgba(76,175,133,.3); }
-    .result-card.error   { background: rgba(224,82,82,.08);  border: 1px solid rgba(224,82,82,.3); }
-    .result-title { font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .75rem; }
-    .result-card.success .result-title { color: var(--green); }
-    .result-card.error   .result-title { color: var(--red); }
-    .result-row { display: flex; justify-content: space-between; font-size: .82rem; padding: .25rem 0; }
-    .result-row span:first-child { color: var(--muted); }
-    .result-row span:last-child  { font-family: 'DM Mono', monospace; color: var(--mint); }
-    .transcript-preview {
-      margin-top: 1rem; padding: .75rem; background: rgba(0,0,0,.3);
-      border-radius: .5rem; font-size: .78rem; font-family: 'DM Mono', monospace;
-      color: var(--muted); line-height: 1.6; max-height: 120px; overflow-y: auto;
-    }
+    /* RESULT */
+    .result { margin-top: 1.25rem; padding: 1.25rem; display: none; border: 2px solid; }
+    .result.success { border-color: var(--green); background: rgba(39,174,96,.06); }
+    .result.error   { border-color: var(--red);   background: rgba(231,76,60,.06); }
+    .result-title { font-size: .75rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .75rem; }
+    .result.success .result-title { color: var(--green); }
+    .result.error   .result-title { color: var(--red); }
+    .result-row { display: flex; justify-content: space-between; font-size: .82rem; padding: .2rem 0; border-bottom: 1px solid var(--border); }
+    .result-row:last-child { border-bottom: none; }
+    .result-row span:last-child { font-weight: 700; color: var(--orange); }
+    .preview { margin-top: .75rem; padding: .75rem; background: var(--grey); font-size: .78rem; color: var(--mid); line-height: 1.6; max-height: 100px; overflow-y: auto; }
 
-    /* Buttons */
+    /* BTNS */
     .btn {
-      padding: .8rem 2rem; border: none; border-radius: 100px;
-      font-family: 'DM Sans', sans-serif; font-size: .8rem;
+      font-family: 'Barlow', sans-serif; font-weight: 900; font-size: .78rem;
       letter-spacing: .1em; text-transform: uppercase;
-      cursor: pointer; transition: all .2s;
+      border: none; cursor: pointer; padding: .75rem 1.75rem;
+      transition: all .15s;
     }
-    .btn-primary { background: var(--sage); color: var(--bg); }
-    .btn-primary:hover { background: var(--mint); }
+    .btn-primary { background: var(--orange); color: var(--white); }
+    .btn-primary:hover { background: var(--orange-dark); }
     .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
-    .btn-outline {
-      background: transparent; color: var(--muted);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover { border-color: var(--sage); color: var(--sage); }
+    .btn-black { background: var(--black); color: var(--white); }
+    .btn-black:hover { background: #333; }
+    .btn-outline { background: transparent; color: var(--black); border: 2px solid var(--black); }
+    .btn-outline:hover { background: var(--black); color: var(--white); }
+    .actions { display: flex; gap: .75rem; margin-top: 1.25rem; flex-wrap: wrap; }
 
-    .actions { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    /* PROMPT EDITOR */
+    .prompt-section { margin-bottom: 1.5rem; }
+    .prompt-section h3 { font-size: .75rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; color: var(--orange); margin-bottom: .5rem; }
+    .hint { font-size: .72rem; color: var(--mid); margin-bottom: .5rem; font-style: italic; }
+
+    .save-banner { display: none; background: var(--green); color: var(--white); padding: .6rem 1rem; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-top: 1rem; }
   </style>
 </head>
 <body>
-<div class="shell">
-  <header>
-    <a href="/" class="back">← Zurück zum Coach</a>
-    <h1>Wissensbasis</h1>
-    <div class="subtitle">Admin · Podcast-Episoden verwalten</div>
-  </header>
 
-  <!-- Stats -->
-  <div class="card" id="statsCard">
-    <div class="card-title">Datenbank-Übersicht</div>
-    <div class="stats-bar">
-      <div class="stat">
-        <div class="stat-val" id="statVectors">—</div>
-        <div class="stat-label">Vektoren gespeichert</div>
+<div class="topbar">
+  <div class="logo-box"></div>
+  <div>
+    <div class="brand-name">Heiko Rössel</div>
+    <div class="brand-sub">Coach Admin</div>
+  </div>
+  <a href="/" class="back-link">← Zum Coach</a>
+</div>
+
+<div class="shell">
+  <h2>Wissensbasis & Einstellungen</h2>
+  <div class="page-sub">Admin-Bereich · Podcast-Episoden & Coach-Konfiguration</div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('upload')">Episoden hochladen</button>
+    <button class="tab" onclick="showTab('prompt')">Coach konfigurieren</button>
+    <button class="tab" onclick="showTab('stats')">Statistiken</button>
+  </div>
+
+  <!-- TAB: UPLOAD -->
+  <div class="tab-content active" id="tab-upload">
+    <div class="card">
+      <div class="card-title">Episode hochladen & transkribieren</div>
+
+      <div class="field">
+        <label>Admin-Passwort</label>
+        <input type="password" id="password" placeholder="Passwort eingeben"/>
       </div>
-      <div class="stat">
-        <div class="stat-val" id="statEpisodes">—</div>
-        <div class="stat-label">Episoden (ca.)</div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <div class="field" style="flex:2;min-width:200px">
+          <label>Episoden-Titel</label>
+          <input type="text" id="episodeTitle" placeholder="z.B. Episode 315 – Singularität"/>
+        </div>
+        <div class="field" style="flex:1;min-width:120px">
+          <label>Nummer (optional)</label>
+          <input type="text" id="episodeNumber" placeholder="315"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <div class="field" style="flex:1;min-width:180px">
+          <label>Link Website</label>
+          <input type="text" id="linkWebsite" placeholder="https://heikoroessel.com/..."/>
+        </div>
+        <div class="field" style="flex:1;min-width:180px">
+          <label>Link Spotify</label>
+          <input type="text" id="linkSpotify" placeholder="https://open.spotify.com/..."/>
+        </div>
+        <div class="field" style="flex:1;min-width:180px">
+          <label>Link Apple Podcasts</label>
+          <input type="text" id="linkApple" placeholder="https://podcasts.apple.com/..."/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>MP3-Datei (auch über 25 MB möglich)</label>
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+          <div class="icon">🎙</div>
+          <p><strong>Klicken oder MP3 hierher ziehen</strong></p>
+          <p>Große Dateien werden automatisch aufgeteilt</p>
+          <div class="file-info" id="fileInfo"></div>
+        </div>
+        <input type="file" id="fileInput" accept=".mp3"/>
+      </div>
+
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="step" id="s1"><div class="dot"></div>MP3 wird hochgeladen</div>
+        <div class="step" id="s2"><div class="dot"></div>Whisper transkribiert Audio</div>
+        <div class="step" id="s3"><div class="dot"></div>Text wird in Chunks aufgeteilt</div>
+        <div class="step" id="s4"><div class="dot"></div>Embeddings werden erstellt</div>
+        <div class="step" id="s5"><div class="dot"></div>In Pinecone gespeichert</div>
+      </div>
+
+      <div class="result" id="result">
+        <div class="result-title" id="resultTitle"></div>
+        <div id="resultContent"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="uploadBtn" onclick="doUpload()">Jetzt verarbeiten</button>
+        <button class="btn btn-outline" onclick="loadStats()">Stats laden</button>
       </div>
     </div>
   </div>
 
-  <!-- Upload Form -->
-  <div class="card">
-    <div class="card-title">Episode hochladen & transkribieren</div>
+  <!-- TAB: PROMPT -->
+  <div class="tab-content" id="tab-prompt">
+    <div class="card">
+      <div class="card-title">Coach-Konfiguration</div>
+      <p class="hint" style="margin-bottom:1.5rem">Alle Felder werden direkt als Anweisungen an den Coach gesendet. Schreibe in natürlicher Sprache – der Coach folgt diesen Anweisungen.</p>
 
-    <div class="field">
-      <label>Admin-Passwort</label>
-      <input type="password" id="password" placeholder="Passwort eingeben" />
-    </div>
-
-    <div class="field">
-      <label>Episoden-Titel</label>
-      <input type="text" id="episodeTitle" placeholder="z.B. Episode 42 – Systemische Fragen" />
-    </div>
-
-    <div class="field">
-      <label>MP3-Datei</label>
-      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-        <div class="icon">🎙</div>
-        <p><strong>Klicken oder MP3 hierher ziehen</strong></p>
-        <p>Unterstützt: MP3 · Max. 25 MB pro Datei</p>
-        <div class="file-info" id="fileInfo"></div>
+      <div class="field">
+        <label>Admin-Passwort</label>
+        <input type="password" id="promptPassword" placeholder="Passwort eingeben"/>
       </div>
-      <input type="file" id="fileInput" accept=".mp3" />
-    </div>
 
-    <!-- Progress -->
-    <div class="progress-wrap" id="progressWrap">
-      <div class="progress-label">
-        <span id="progressLabel">Verarbeite …</span>
-        <span id="progressPct"></span>
+      <div class="prompt-section">
+        <h3>Rolle des Coaches</h3>
+        <p class="hint">Wer ist dieser Coach? Auf welchem Wissen basiert er?</p>
+        <textarea id="pRole" rows="4"></textarea>
       </div>
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="step-list">
-        <div class="step" id="step1"><div class="dot"></div>MP3 wird hochgeladen</div>
-        <div class="step" id="step2"><div class="dot"></div>Whisper transkribiert Audio</div>
-        <div class="step" id="step3"><div class="dot"></div>Text wird in Chunks aufgeteilt</div>
-        <div class="step" id="step4"><div class="dot"></div>Embeddings werden erstellt</div>
-        <div class="step" id="step5"><div class="dot"></div>In Pinecone gespeichert</div>
+
+      <div class="prompt-section">
+        <h3>Verhalten & Gesprächsführung</h3>
+        <p class="hint">Wie verhält er sich? Wie führt er Gespräche? Welche Regeln gelten?</p>
+        <textarea id="pBehavior" rows="6"></textarea>
       </div>
-    </div>
 
-    <!-- Result -->
-    <div class="result-card" id="resultCard">
-      <div class="result-title" id="resultTitle"></div>
-      <div id="resultContent"></div>
-    </div>
+      <div class="prompt-section">
+        <h3>Interventionen & Episoden-Empfehlungen</h3>
+        <p class="hint">Wann bringt er Beobachtungen? Wie empfiehlt er Episoden? Nach wievielen Fragen?</p>
+        <textarea id="pInterventions" rows="6"></textarea>
+      </div>
 
-    <div class="actions">
-      <button class="btn btn-primary" id="uploadBtn" onclick="uploadFile()">
-        Jetzt verarbeiten
-      </button>
-      <button class="btn btn-outline" onclick="loadStats()">Stats aktualisieren</button>
+      <div class="prompt-section">
+        <h3>Systemische Prinzipien</h3>
+        <p class="hint">Welche Grundprinzipien leiten den Coach?</p>
+        <textarea id="pPrinciples" rows="5"></textarea>
+      </div>
+
+      <div class="prompt-section">
+        <h3>Begrüßung & Gesprächseinstieg</h3>
+        <p class="hint">Wie beginnt der Coach jedes Gespräch?</p>
+        <textarea id="pGreeting" rows="3"></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="loadPrompt()">Aktuellen Prompt laden</button>
+        <button class="btn btn-black" onclick="savePrompt()">Prompt speichern</button>
+      </div>
+      <div class="save-banner" id="saveBanner">✓ Prompt gespeichert – aktiv beim nächsten Gespräch</div>
+    </div>
+  </div>
+
+  <!-- TAB: STATS -->
+  <div class="tab-content" id="tab-stats">
+    <div class="card">
+      <div class="card-title">Datenbank-Übersicht</div>
+      <div class="field">
+        <label>Admin-Passwort</label>
+        <input type="password" id="statsPassword" placeholder="Passwort eingeben"/>
+      </div>
+      <div class="stats-row" style="margin-bottom:1.5rem">
+        <div><div class="stat-val" id="statVectors">—</div><div class="stat-label">Vektoren gespeichert</div></div>
+        <div><div class="stat-val" id="statEpisodes">—</div><div class="stat-label">Episoden (ca.)</div></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="loadStats()">Aktualisieren</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-  // ── File Drop ──────────────────────────────────────────────────────────────
-  const dropzone = document.getElementById('dropzone');
-  const fileInput = document.getElementById('fileInput');
-  const fileInfo  = document.getElementById('fileInfo');
+  // TABS
+  function showTab(id){
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    event.target.classList.add('active');
+  }
 
-  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
-  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
-  dropzone.addEventListener('drop', e => {
-    e.preventDefault(); dropzone.classList.remove('drag');
-    const f = e.dataTransfer.files[0];
-    if (f) { fileInput.files = e.dataTransfer.files; showFile(f); }
+  // DROPZONE
+  const dropzone=document.getElementById('dropzone');
+  const fileInput=document.getElementById('fileInput');
+  dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag');});
+  dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag'));
+  dropzone.addEventListener('drop',e=>{
+    e.preventDefault();dropzone.classList.remove('drag');
+    const f=e.dataTransfer.files[0];
+    if(f){fileInput.files=e.dataTransfer.files;showFile(f);}
   });
-  fileInput.addEventListener('change', () => { if (fileInput.files[0]) showFile(fileInput.files[0]); });
-
-  function showFile(f) {
-    fileInfo.textContent = `${f.name} · ${(f.size / 1024 / 1024).toFixed(1)} MB`;
+  fileInput.addEventListener('change',()=>{if(fileInput.files[0])showFile(fileInput.files[0]);});
+  function showFile(f){
+    document.getElementById('fileInfo').textContent=f.name+' · '+(f.size/1024/1024).toFixed(1)+' MB';
   }
 
-  // ── Steps ──────────────────────────────────────────────────────────────────
-  function setStep(n) {
-    for (let i = 1; i <= 5; i++) {
-      const el = document.getElementById(`step${i}`);
-      el.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+  // STEPS
+  function setStep(n){
+    for(let i=1;i<=5;i++){
+      const el=document.getElementById('s'+i);
+      el.className='step'+(i<n?' done':i===n?' active':'');
     }
-    const pct = Math.min(((n - 1) / 4) * 100, 95);
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressPct').textContent = Math.round(pct) + '%';
+    document.getElementById('progressFill').style.width=Math.min(((n-1)/4)*100,95)+'%';
   }
 
-  function showResult(success, data) {
-    const card = document.getElementById('resultCard');
-    const title = document.getElementById('resultTitle');
-    const content = document.getElementById('resultContent');
-    card.className = 'result-card ' + (success ? 'success' : 'error');
-    card.style.display = 'block';
+  // UPLOAD
+  async function doUpload(){
+    const pw=document.getElementById('password').value.trim();
+    const title=document.getElementById('episodeTitle').value.trim();
+    const file=fileInput.files[0];
+    if(!pw)return alert('Passwort eingeben');
+    if(!title)return alert('Episoden-Titel eingeben');
+    if(!file)return alert('MP3 auswählen');
 
-    if (success) {
-      title.textContent = '✓ Erfolgreich verarbeitet';
-      content.innerHTML = `
-        <div class="result-row"><span>Episode</span><span>${data.episode}</span></div>
-        <div class="result-row"><span>Zeichen transkribiert</span><span>${data.transcript_length.toLocaleString()}</span></div>
-        <div class="result-row"><span>Chunks erstellt</span><span>${data.chunks_created}</span></div>
-        <div class="result-row"><span>Vektoren gespeichert</span><span>${data.vectors_stored}</span></div>
-        <div class="transcript-preview">${data.transcript_preview}</div>
-      `;
-      document.getElementById('progressFill').style.width = '100%';
-      document.getElementById('progressPct').textContent = '100%';
-      setStep(6);
-    } else {
-      title.textContent = '✗ Fehler';
-      content.innerHTML = `<div style="color:var(--red);font-size:.85rem;">${data}</div>`;
-    }
-  }
-
-  // ── Upload ─────────────────────────────────────────────────────────────────
-  async function uploadFile() {
-    const password = document.getElementById('password').value.trim();
-    const title    = document.getElementById('episodeTitle').value.trim();
-    const file     = fileInput.files[0];
-
-    if (!password) return alert('Bitte Passwort eingeben');
-    if (!title)    return alert('Bitte Episoden-Titel eingeben');
-    if (!file)     return alert('Bitte MP3 auswählen');
-
-    // Setup UI
-    document.getElementById('uploadBtn').disabled = true;
-    document.getElementById('progressWrap').style.display = 'block';
-    document.getElementById('resultCard').style.display = 'none';
-
+    document.getElementById('uploadBtn').disabled=true;
+    document.getElementById('progressWrap').style.display='block';
+    document.getElementById('result').style.display='none';
     setStep(1);
 
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('episode_title', title);
-      formData.append('password', password);
+    try{
+      const fd=new FormData();
+      fd.append('file',file);
+      fd.append('episode_title',title);
+      fd.append('episode_number',document.getElementById('episodeNumber').value);
+      fd.append('link_website',document.getElementById('linkWebsite').value);
+      fd.append('link_spotify',document.getElementById('linkSpotify').value);
+      fd.append('link_apple',document.getElementById('linkApple').value);
+      fd.append('password',pw);
 
-      setStep(2); // uploading / whisper starts
-
-      const res = await fetch('/api/upload-mp3', {
-        method: 'POST',
-        body: formData,
-      });
-
-      setStep(4); // embedding
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Unbekannter Fehler');
-      }
-
-      const data = await res.json();
+      setStep(2);
+      const res=await fetch('/api/upload-mp3',{method:'POST',body:fd});
+      setStep(4);
+      if(!res.ok){const e=await res.json();throw new Error(e.detail||'Fehler');}
+      const data=await res.json();
       setStep(5);
-      setTimeout(() => showResult(true, data), 500);
-      loadStats();
+      document.getElementById('progressFill').style.width='100%';
 
-    } catch (err) {
-      showResult(false, err.message);
-    } finally {
-      document.getElementById('uploadBtn').disabled = false;
+      const r=document.getElementById('result');
+      r.className='result success'; r.style.display='block';
+      document.getElementById('resultTitle').textContent='Erfolgreich verarbeitet';
+      document.getElementById('resultContent').innerHTML=`
+        <div class="result-row"><span>Episode</span><span>${data.episode}</span></div>
+        <div class="result-row"><span>Teile verarbeitet</span><span>${data.parts}</span></div>
+        <div class="result-row"><span>Zeichen transkribiert</span><span>${data.transcript_length.toLocaleString()}</span></div>
+        <div class="result-row"><span>Chunks erstellt</span><span>${data.chunks}</span></div>
+        <div class="result-row"><span>Vektoren gespeichert</span><span>${data.vectors}</span></div>
+        <div class="preview">${data.preview}</div>
+      `;
+      loadStats();
+    }catch(err){
+      const r=document.getElementById('result');
+      r.className='result error'; r.style.display='block';
+      document.getElementById('resultTitle').textContent='Fehler';
+      document.getElementById('resultContent').innerHTML=`<div style="color:var(--red)">${err.message}</div>`;
+    }finally{
+      document.getElementById('uploadBtn').disabled=false;
     }
   }
 
-  // ── Stats ──────────────────────────────────────────────────────────────────
-  async function loadStats() {
-    const password = document.getElementById('password').value.trim();
-    if (!password) return;
-    try {
-      const res = await fetch(`/api/stats?password=${encodeURIComponent(password)}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      document.getElementById('statVectors').textContent = data.total_vectors.toLocaleString();
-      document.getElementById('statEpisodes').textContent = '~' + Math.round(data.total_vectors / 30);
-    } catch (e) { console.error(e); }
+  // STATS
+  async function loadStats(){
+    const pw=document.getElementById('statsPassword').value||document.getElementById('password').value;
+    if(!pw)return;
+    try{
+      const r=await fetch('/api/stats?password='+encodeURIComponent(pw));
+      if(!r.ok)return;
+      const d=await r.json();
+      document.getElementById('statVectors').textContent=d.total_vectors.toLocaleString();
+      document.getElementById('statEpisodes').textContent='~'+Math.round(d.total_vectors/30);
+    }catch(e){console.error(e);}
   }
 
-  // Load stats on pw input
-  document.getElementById('password').addEventListener('change', loadStats);
+  // PROMPT
+  async function loadPrompt(){
+    const pw=document.getElementById('promptPassword').value.trim();
+    if(!pw)return alert('Passwort eingeben');
+    try{
+      const r=await fetch('/api/prompt?password='+encodeURIComponent(pw));
+      if(!r.ok){alert('Falsches Passwort');return;}
+      const d=await r.json();
+      document.getElementById('pRole').value=d.role||'';
+      document.getElementById('pBehavior').value=d.behavior||'';
+      document.getElementById('pInterventions').value=d.interventions||'';
+      document.getElementById('pPrinciples').value=d.principles||'';
+      document.getElementById('pGreeting').value=d.greeting||'';
+    }catch(e){alert('Fehler: '+e.message);}
+  }
+
+  async function savePrompt(){
+    const pw=document.getElementById('promptPassword').value.trim();
+    if(!pw)return alert('Passwort eingeben');
+    const payload={
+      password:pw,
+      role:document.getElementById('pRole').value,
+      behavior:document.getElementById('pBehavior').value,
+      interventions:document.getElementById('pInterventions').value,
+      principles:document.getElementById('pPrinciples').value,
+      greeting:document.getElementById('pGreeting').value,
+    };
+    try{
+      const r=await fetch('/api/prompt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if(!r.ok){alert('Fehler beim Speichern');return;}
+      const banner=document.getElementById('saveBanner');
+      banner.style.display='block';
+      setTimeout(()=>banner.style.display='none',4000);
+    }catch(e){alert('Fehler: '+e.message);}
+  }
+
+  // auto-load stats on pw change
+  document.getElementById('statsPassword').addEventListener('change',loadStats);
+  document.getElementById('password').addEventListener('change',loadStats);
 </script>
 </body>
 </html>
